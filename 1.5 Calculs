@@ -1,0 +1,24 @@
+int position = 0;
+float deplacement = 0;
+
+void  walk() {
+  position=position+1;
+  deplacement=deplacement+1;
+  println(position);
+}
+
+void jump() {
+  position=position+2;
+  deplacement=deplacement+1;
+  println(position);
+}
+
+void setup() {
+  println("Positions successives de Toto");
+  walk();
+  jump();
+  jump();
+  jump();
+  println("Nombre de déplacements" + deplacement);
+  println("Distance moyenne = " + 7/deplacement);
+}
