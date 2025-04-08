@@ -1,0 +1,9 @@
+void setup() {
+  float total = calculePrix(4) + calculePrix(9);
+println(total);
+}
+
+float calculePrix (int nombreDeBillets) {
+  float prix=10.5*float (nombreDeBillets);
+  return prix;
+}
