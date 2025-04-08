@@ -1,0 +1,77 @@
+ int compteur = 0;
+ int troupeau = 5;
+ String[] cri={"Beeeh","Meuh","Miaou","Ouaf","Cot cot", "SsssSs"};
+  
+ void setup () {
+  size(1500, 1500);
+      fill(255);
+      rect (0,0,1500,1500);
+ 
+}
+
+void draw () {
+  if (keyPressed) {
+    int animal=int(random(2));
+    if (animal==1) {
+      mouton1();
+    } else {
+      mouton2();
+    }
+    delay(100);
+    compteur++;
+    if (compteur==troupeau) {
+      fill(255);
+      rect (0,0,1500,1500);
+      compteur=0;
+      
+    }
+    
+  }
+}
+
+
+void mouton1 () {
+  int x=200+int(random(1000));
+  int y=int(random(1000));
+  int r=int(random(256));
+  int g=int(random(256));
+  int b=int(random(256));
+  int s=1-2*int(random(2));
+  fill (r, g, b);
+  rect(x, y, 200*s, 80);
+  rect(x+10*s, y+80, 10*s, 50);
+  rect(x+70*s, y+80, 10*s, 50);
+  rect(x+130*s, y+80, 10*s, 50);
+  rect(x+180*s, y+80, 10*s, 50);
+  rect(x+205*s, y, 60*s, 40);
+  fill (0);
+  ellipse (x+220*s, y+20, 10*s, 10);
+  textSize(20+int(random(50)));
+  text(cri[int(random(cri.length))],x+235*s,y);
+}
+
+void mouton2 () {
+  int x=450+int(random(1000));
+  int y=int(random(1000));
+  int r=int(random(256));
+  int g=int(random(256));
+  int b=int(random(256));
+  int s=1-2*int(random(2));
+  fill (r, g, b);
+
+  rect(45*s+x, y, 400*s, 200); // corps
+
+  rect(50*s+x, 200+y, 50*s, 100);
+  rect(150*s+x, 200+y, 50*s, 100);
+  rect(275*s+x, 200+y, 50*s, 100);
+  rect(350*s+x, 200+y, 50*s, 100);
+  rect(445*s+x, 200+y, 125*s, 80); // tete
+  fill(0);
+  ellipse(550*s+x, 225+y, 10*s, 10); //oeil
+
+  ellipse(575*s+x, 260+y, 50*s, 10);
+  textSize(20+int(random(50)));
+  text(cri[int(random(cri.length))],x+575*s,y+160);
+
+  ellipse(475*s+x, 250+y, 15*s, 100); //oreille
+}
