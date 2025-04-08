@@ -1,0 +1,57 @@
+int x = 500;
+int y = 500;
+int pas = 1;
+int delai=0;
+
+void setup() {
+  size (1000, 1000);
+  fill(255);
+  rect(0, 0, 1000, 1000);
+}
+
+void AfficheBonhomme(int x, int y, int r, int g, int b) {
+  fill (r, g, b);
+  noStroke();
+  ellipse (x, y, 5, 5);
+}
+
+void draw() {
+  if (keyPressed) {
+    int touche=key;
+    println(touche);
+    AfficheBonhomme(x, y, 255, 255, 255);
+    if (touche==55 || touche==56 || touche == 57) {
+      y=y-pas;
+    }
+    if (touche==49 || touche==50 || touche==51 ) {
+      y=y+pas;
+    }
+    if (touche==49 || touche==52 || touche==55) {
+      x=x-pas;
+    }
+    if (touche==51 || touche==54 || touche==57) {
+      x=x+pas;
+    }
+    if (touche==53) {
+      x=1000-x;
+      y=1000-y;
+    }
+    if (x<0) {
+      x=1000;
+    }
+    if (x>1000) {
+      x=0;
+    }
+
+    if (y<0) {
+      y=1000;
+    }
+
+    if (y>1000) {
+      y=0;
+    }
+
+    AfficheBonhomme(x, y, 0, 0, 0);
+    delay(delai);
+  }
+}
