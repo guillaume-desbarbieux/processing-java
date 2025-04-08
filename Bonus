@@ -1,0 +1,26 @@
+void setup () {
+  size (1000, 1000);
+  int a=0;
+  int y=0;
+  for (int x=0; x<1000; x=x+300) {
+    mouton(x, y, color (a, 255-a, max(2*a, 255))) ;
+    a=a+5;
+    if (x>=700) {
+      x=-300;
+      y=y+100;
+    }
+  }
+}
+
+
+void mouton(int x, int y, color c) {
+  fill (c);
+  rect(x, y, 200, 80);
+  rect(x+10, y+80, 10, 50);
+  rect(x+70, y+80, 10, 50);
+  rect(x+130, y+80, 10, 50);
+  rect(x+180, y+80, 10, 50);
+  rect(x+205, y+0, 60, 40);
+  fill(0);
+  ellipse (x+220, y+20, 10, 10);
+}
