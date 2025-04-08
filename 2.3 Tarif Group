@@ -1,0 +1,13 @@
+void setup() {
+  float total = calculePrix(4) + calculePrix(9);
+println(total);
+}
+
+float calculePrix (int nombreDeBillets) {
+  float cout=10.5;
+  if (nombreDeBillets>5) {
+    cout=9;
+  }
+  float prix=cout*float (nombreDeBillets);
+  return prix;
+}
