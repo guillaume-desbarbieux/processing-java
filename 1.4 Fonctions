@@ -1,0 +1,22 @@
+int x = 0;
+
+void setup() { 
+
+walk();
+println(x);
+jump();
+println(x);
+jump();
+println(x);
+jump();
+println(x);
+
+}
+
+void  walk() { 
+ x=x+1;  
+}
+
+void jump() { 
+ x=x+2;  
+}
