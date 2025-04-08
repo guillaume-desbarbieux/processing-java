@@ -1,0 +1,18 @@
+void setup () {
+  size (1000, 1000);
+  mouton(100,100, color (255,0,0) ;
+  mouton (400,100, color(0,255,0));
+  mouton (100, 300), color(0,0,255);
+}
+
+void mouton(int x, int y, color c) {
+fill (color c);
+  rect(x, y, 200, 80);
+  rect(x+10, y+80, 10, 50);
+  rect(x+70, y+80, 10, 50);
+  rect(x+130, y+80, 10, 50);
+  rect(x+180, y+80, 10, 50);
+  rect(x+205, y+0, 60, 40);
+  fill(0);
+  ellipse (x+220, y+20, 10, 10);
+}
