@@ -1,4 +1,4 @@
-# Dessine des moutons avec boucles for et condition if
+// Dessine des moutons avec boucles for et condition if
 
 void setup () {
   size (1000, 1000);
