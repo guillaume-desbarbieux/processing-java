@@ -2,14 +2,14 @@
 
 void setup () {
   size (1000, 1000);
-  int a=0;
-  int y=0;
-  for (int x=0; x<1000; x=x+300) {
-    mouton(x, y, color (a, 255-a, max(2*a, 255))) ;
-    a=a+5;
-    if (x>=700) {
-      x=-300;
-      y=y+100;
+  int c=0;
+  for (int y=0; y<1000; y=y+100) {
+    for (int x=0; x<1000; x=x+300) {
+      mouton(x, y, color (c, 255-c, 2*c));
+      c=c+40;
+      if  (c>255) {
+        c=c-255;
+      }
     }
   }
 }
