@@ -2,12 +2,61 @@ int x = 500;
 int y = 500;
 int pas = 1;
 int delai=0;
+int Haut=0;
+int Bas=0;
+int Gauche=0;
+int Droite=0;
+int Special=0;
 
-void setup() {
+void setup() {  
+  ChoisirCommandes();
   size (1000, 1000);
-  fill(255);
+  fill(255,0,0);
   rect(0, 0, 1000, 1000);
+  
 }
+
+//Enregistre le choix utilisateur controler le jeu
+void ChoisirCommandes() {
+  println("Vous allez paramétrer les contrôles du jeu");
+  println("Appuyez sur la touche correspondant à votre choix pour...");
+  delay(300);
+  println("Haut");
+  Haut = GetKey();
+  print(" OK !");
+  delay (300);
+  println("Bas");
+  Bas = GetKey();
+ print(" OK !");
+  delay (300);
+  print("Gauche");
+  Gauche = GetKey();
+ print(" OK !");
+  delay (300);
+  print("Droite");
+  Droite = GetKey();
+  print(" OK !");
+  delay (300);
+  print("Spécial");
+  Special = GetKey();
+  print(" OK !");
+  delay (300);
+  print("Choix des commandes terminé");
+  delay(2000);
+}
+
+//Récupère la valeur de la touche préssée.
+int GetKey() {
+  while (!keyPressed) { 
+  }
+  x=key;
+  while (keyPressed) {
+  }
+  return x;
+}
+
+
+
 
 void AfficheBonhomme(int x, int y, int r, int g, int b) {
   fill (r, g, b);
@@ -20,16 +69,16 @@ void draw() {
     int touche=key;
     println(touche);
     AfficheBonhomme(x, y, 255, 255, 255);
-    if (touche==55 || touche==56 || touche == 57) {
+    if (touche==22) {
       y=y-pas;
     }
-    if (touche==49 || touche==50 || touche==51 ) {
+    if (touche==115 ) {
       y=y+pas;
     }
-    if (touche==49 || touche==52 || touche==55) {
+    if (touche==113) {
       x=x-pas;
     }
-    if (touche==51 || touche==54 || touche==57) {
+    if (touche==122) {
       x=x+pas;
     }
     if (touche==53) {
