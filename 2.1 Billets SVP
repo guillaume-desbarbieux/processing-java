@@ -1,0 +1,8 @@
+void setup() {
+  calculePrix(4);
+  calculePrix(9);
+}
+
+void calculePrix (int nombreDeBillets) {
+  println("Le prix pour "+nombreDeBillets+" personne(s) est de "+10.5*float (nombreDeBillets)+" euros");
+}
