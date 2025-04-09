@@ -1,12 +1,11 @@
-int somme=1;
-int fin=23;
+int total=0;
 
 void setup() {
-  print(1);
-  for (int i=2 ; i<=fin ; i++) {
-    somme=somme+i;
-    print("+"+i);
-     
+  print(somme (23));
+}
+int somme(int n) {
+  for (int i=2; i<=n; i++) {
+    total=total+i;
   }
-   print("="+somme);  
+  return total;
 }
