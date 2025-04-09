@@ -1,0 +1,11 @@
+int somme=1;
+
+void setup() {
+  print(1);
+  for (int i=2 ; i<101 ; i++) {
+    somme=somme+i;
+    print("+"+i);
+     
+  }
+   print("="+somme);  
+}
