@@ -1,0 +1,19 @@
+int n=110;
+
+void setup() {
+  syracuse(n);
+}
+
+void syracuse (int n) {
+  while (n!=1) {
+    //    if (n%2==0) {
+    //      n=n/2;
+    //    } else {
+    //      n=3*n+1;
+    //    }
+
+    // ou alors sans condition if :
+    n=(n%2)*(3*n+1)+((n+1)%2)*(n/2);
+    println(n);
+  }
+}
