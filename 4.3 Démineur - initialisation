@@ -1,0 +1,60 @@
+int N = 10; // taille du tableau
+int nbMines = 3; // Nombre de Mines initial
+int tailleCellule = 40; //Taille d'affichage d'une cellule
+color black = color (0);
+color green = color (0, 255, 0);
+color red = color (255, 0, 0);
+color blue = color (0, 0, 255);
+
+
+void setup() {
+  // windowResize (N*tailleCellule, N*tailleCellule); 
+  fullScreen();
+  int[][] tableau = initBoard(N, nbMines);
+  displayBoard(tableau);
+}
+
+// fonction qui crée un tableau de la taille indiquée et contenant le nombre de mines demandées.
+int[][] initBoard(int taille, int quantite) {
+
+
+// Vérifie si le nombre de Mines ne dépasse pas le nombre de cases
+  if (quantite>taille*taille) {
+    quantite=taille*taille;
+  }
+
+// Crée le tableau et le rempli de case vides (0)  
+  int tableau[][] = new int[taille][taille];
+  for (int i=0; i<taille; i++) {
+    for (int j=0; j<taille; j++) {
+      tableau[i][j] = 0;
+    }
+  }
+
+// Génère une position aléatoire et place la mine à ces coordonnées. Itération jusqu'à avoir placé toutes les mines  
+  while (quantite>0) {
+    int i = int(random(taille));
+    int j = int(random(taille));
+    if (tableau[i][j]==0) {     // Vérifie qu'il n'y a pas déjà une mine à cet emplacement
+      tableau[i][j]=99;
+      quantite--;
+    }
+  }
+  return tableau;
+}
+
+
+// affiche le tableau, cellule par cellule.
+void displayBoard (int [][] tableau) {
+
+  for (int i=0; i<N; i++) {
+    for (int j=0; j<N; j++) {
+      if (tableau[i][j] == 0) {
+        fill(black);          // couleur case vide
+      } else {
+        fill(blue);          // couleur mine
+      }
+      rect(i*tailleCellule+1, j*tailleCellule+1, tailleCellule-2, tailleCellule-2, 5);
+    }
+  }
+}
