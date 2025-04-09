@@ -1,0 +1,109 @@
+int N = 10; // taille du tableau
+int nbMines = 30; // Nombre de Mines initial
+int tailleCellule = 40; //Taille d'affichage d'une cellule
+color black = color (0);
+color green = color (0, 255, 0);
+color red = color (255, 0, 0);
+color blue = color (0, 0, 255);
+boolean clic = false;
+
+
+void setup() {
+  // windowResize (N*tailleCellule, N*tailleCellule);
+  fullScreen();
+  int[][] tableau = initBoard(N, nbMines);
+  displayBoard();
+  draw (tableau);
+}
+
+// fonction qui crée un tableau de la taille indiquée et contenant le nombre de mines demandées.
+int[][] initBoard(int taille, int quantite) {
+
+
+  // Vérifie si le nombre de Mines ne dépasse pas le nombre de cases
+  if (quantite>taille*taille) {
+    quantite=taille*taille;
+  }
+
+  // Crée le tableau et le rempli de case vides (0)
+  int tableau[][] = new int[taille][taille];
+  for (int i=0; i<taille; i++) {
+    for (int j=0; j<taille; j++) {
+      tableau[i][j] = 0;
+    }
+  }
+
+  // Génère une position aléatoire et place la mine à ces coordonnées. Itération jusqu'à avoir placé toutes les mines
+  while (quantite>0) {
+    int i = int(random(taille));
+    int j = int(random(taille));
+    if (tableau[i][j]==0) {     // Vérifie qu'il n'y a pas déjà une mine à cet emplacement
+      tableau[i][j]=99;
+      quantite--;
+    }
+  }
+  return tableau;
+}
+
+
+// affiche le tableau, cellule par cellule.
+void displayBoard () {
+  for (int i=0; i<N; i++) {
+    for (int j=0; j<N; j++) {
+      fill(blue);
+      rect(i*tailleCellule+1, j*tailleCellule+1, tailleCellule-2, tailleCellule-2, 5);
+    }
+  }
+}
+
+void displayCell (int [][] tableau, int i, int j) {
+  fill(255);
+  rect(i*tailleCellule+1, j*tailleCellule+1, tailleCellule-2, tailleCellule-2, 5);                // change la couleur de fond de la cellule
+  fill(black);
+  textSize(tailleCellule);
+  if (isAMine(tableau[i][j])) {
+    text("X", (i+0.2)*tailleCellule, (j+0.8)*tailleCellule+1);                                   // affiche X si mine
+    textSize(3*tailleCellule);
+    fill(red);
+    text("Game Over !", tailleCellule, tailleCellule*N/2);                                      // affiche Game Over
+  } else {
+    text(getMines(tableau, i, j), (i+0.2)*tailleCellule+1, (j+0.8)*tailleCellule+1);          // affiche nombre de mines voisines
+  }
+}
+
+
+
+
+// détermine si la case est une mine
+boolean isAMine (int cellule) {
+  return (cellule==99);
+}
+
+
+// compte le nombre de Mines voisines
+int getMines (int[][] tableau, int x, int y) {
+  int compteur=0;
+  for (int i=x-1; i<x+2; i++) {
+    for (int j=y-1; j<y+2; j++) {
+      if (i>=0 && j>=0 && i<N && j<N) {
+        if (tableau[i][j]==99) {
+          compteur++;
+        }
+      }
+    }
+  }
+  return compteur;
+}
+
+void draw (int [][] tableau) {
+  if (clic) {
+    println(mouseX/tailleCellule);
+    println(mouseY/tailleCellule);
+    displayCell(tableau, mouseX/tailleCellule, mouseY/tailleCellule);
+    clic=false;
+  }
+}
+
+void mouseClicked() {
+  clic=true;
+}
