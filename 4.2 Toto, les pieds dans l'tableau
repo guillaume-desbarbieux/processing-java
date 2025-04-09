@@ -1,23 +1,22 @@
 int position = 0;
-boolean[] chemin = {false, false, true, false, true, false, true, false, true, false, false, false};
+boolean[] chemin = {false, true, false, false, true, false, true, false, true, false, false, false};
 
 void setup() {
-  while (position<chemin.length-1) {
-    go();
-    println(position);
-  }
-}
-
-void go () {
-  if (isNearWater()) {
-    jump();
+  if (giveUp()) {
+    println("Toto ne veux pas se mouiller les pieds");
   } else {
-    walk();
+    while (position<chemin.length-1) {
+      go();
+      println(position);
+    }
   }
 }
-
-boolean isNearWater () {
-  return (chemin[position+1]);
+void go () {
+  if (!chemin[position+1]) {
+    walk();
+  } else {
+    jump();
+  }
 }
 
 void jump() {
@@ -29,3 +28,12 @@ void jump() {
 void  walk() {
   position++;
 }
+
+boolean giveUp () {
+  boolean choix = (chemin[0] || chemin[chemin.length-1]);
+  for (int i=1; (i<chemin.length-3) && !choix; i++) {
+    choix = (chemin[i] && chemin [i+1]);
+  }
+  return choix;
+}
+
