@@ -1,0 +1,16 @@
+int[] board = { 7, 2, 9, 10, 1, -4 };
+
+void setup() {
+  print("La valeur max de ce tableau vaut ");
+  print(getMax(board));
+}
+
+int getMax (int[] tableau) {
+  int max = tableau[0];
+  for (int i=1 ; i<tableau.length ; i++) {
+    if (tableau[i]>max) {
+      max=tableau[i];
+    }
+  }
+  return max;
+}
