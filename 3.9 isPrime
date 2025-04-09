@@ -7,7 +7,7 @@ void setup() {
 
 boolean isPrime (int n) {
   boolean result = true;
-  for (int i=2 ; i*i<=n ; i++) {
+  for (int i=2 ; (i*i<=n) && result ; i++) {
     result=(n%i!=0);
   }
   return result;
