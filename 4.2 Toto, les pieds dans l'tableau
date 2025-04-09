@@ -1,0 +1,31 @@
+int position = 0;
+boolean[] chemin = {false, false, true, false, true, false, false, false};
+
+void setup() {
+  while (position<7) {
+    go();
+    println(position);
+  }
+}
+
+void go () {
+  if (isNearWater()) {
+    jump();
+  } else {
+    walk();
+  }
+}
+
+boolean isNearWater () {
+  return (chemin[position+1]);
+}
+
+void jump() {
+  position++;
+  position++;
+}
+
+
+void  walk() {
+  position++;
+}
