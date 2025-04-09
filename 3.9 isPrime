@@ -1,0 +1,14 @@
+int n=37;
+
+void setup() {
+  print(isPrime(n))
+  ;
+}
+
+boolean isPrime (int n) {
+  boolean result = true;
+  for (int i=2 ; i*i<=n ; i++) {
+    result=(n%i!=0);
+  }
+  return result;
+}
