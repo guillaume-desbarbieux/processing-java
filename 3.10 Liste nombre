@@ -1,0 +1,14 @@
+void setup() {
+  for (int i=1; i<1001; i=i+2) {
+    if (isPrime(i)) {
+      println(i);
+    }
+  }
+}
+boolean isPrime (int n) {
+  boolean result = true;
+  for (int i=2; (i*i<=n) && result; i++) {
+    result=(n%i!=0);
+  }
+  return result;
+}
