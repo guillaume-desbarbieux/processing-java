@@ -1,0 +1,76 @@
+boolean pause = false;
+int pas = 10;
+int x = pas;
+int y = 0;
+int delai = 20;
+IntList Snake = new IntList();
+
+void setup() {
+  for (int i=0; i<5; i++) {
+    Snake.append(500-i*pas);
+    Snake.append(500);
+  }
+  size (1000, 1000);
+  noStroke();
+  background(255);
+}
+
+void AfficheSnake() {
+  fill (255);
+  ellipse (Snake.get(0), Snake.get(1), pas+2, pas+2);
+  int s=Snake.size();
+  for (int i=2; i<s-2; i=i+2) {
+    fill (0);
+    ellipse (Snake.get(i), Snake.get(i+1), pas, pas);
+  }
+  fill (255, 0, 0);
+  ellipse (Snake.get(s-2), Snake.get(s-1), pas, pas);
+}
+
+boolean CheckLife () {
+  boolean life = true;
+  life = (Snake.get(Snake.size()-2)<1000 && Snake.get(Snake.size()-2)>0 && Snake.get(Snake.size()-1)>0 && Snake.get(Snake.size()-1)<1000);
+  return life;
+}
+
+void draw() {
+  if (keyPressed) {
+    switch(key) {
+    case '8' :
+      x=0;
+      y=-pas;
+      break;
+    case '2' :
+      x=0;
+      y=pas;
+      break;
+    case '4' :
+      x=-pas;
+      y=0;
+      break;
+    case '6' :
+      x=pas;
+      y=0;
+      break;
+    case ' ' :
+      pause = !pause;
+      break;
+    }
+  }
+  Snake.append(Snake.get(Snake.size()-2)+x);
+  Snake.append(Snake.get(Snake.size()-2)+y);
+  AfficheSnake();
+  if (!CheckLife()) {
+    StopGame();
+  }
+  Snake.remove(0);
+  Snake.remove(0);
+  delay(delai);
+}
+
+void StopGame() {
+  noLoop();
+  textSize(70);
+  fill (0);
+  text("GAME OVER !", 400, 400);
+}
