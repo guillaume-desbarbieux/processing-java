@@ -24,10 +24,10 @@ void initBoard(int taille, int quantite) {
     quantite=taille*taille;
   }
 
-  // Crée le tableau et le rempli de case vides (0)
+  // Crée le tableau et le rempli de case vides (1)
   for (int i=0; i<taille; i++) {
     for (int j=0; j<taille; j++) {
-      tableau[i][j] = 0;
+      tableau[i][j] = 1;
     }
   }
 
@@ -35,8 +35,8 @@ void initBoard(int taille, int quantite) {
   while (quantite>0) {
     int i = int(random(taille));
     int j = int(random(taille));
-    if (tableau[i][j]==0) {     // Vérifie qu'il n'y a pas déjà une mine à cet emplacement
-      tableau[i][j]=99;
+    if (isAMine(tableau[i][j])) {     // Vérifie qu'il n'y a pas déjà une mine à cet emplacement
+      tableau[i][j]=2;
       quantite--;
     }
   }
@@ -54,6 +54,7 @@ void displayBoard () {
 }
 
 void displayCell (int i, int j) {
+  if (mouseButton==LEFT) {
   fill(255);
   rect(i*tailleCellule+1, j*tailleCellule+1, tailleCellule-2, tailleCellule-2, 5);                // change la couleur de fond de la cellule
   fill(black);
@@ -65,7 +66,13 @@ void displayCell (int i, int j) {
     text("Game Over !", tailleCellule, tailleCellule*N/2);                                      // affiche Game Over
   } else {
     text(getMines(i, j), (i+0.2)*tailleCellule+1, (j+0.8)*tailleCellule+1);          // affiche nombre de mines voisines
-  }
+  } else if (tableau[i][j]>0){
+fill(red);
+} else {
+fill(blue);
+}
+tableau[i][j]=-tableau[i][j];
+rect(i*tailleCellule+1, j*tailleCellule+1, tailleCellule-2, tailleCellule-2, 5);                // change la couleur de fond de la cellule
 }
 
 
@@ -73,7 +80,7 @@ void displayCell (int i, int j) {
 
 // détermine si la case est une mine
 boolean isAMine (int cellule) {
-  return (cellule==99);
+  return (cellule%2==0);
 }
 
 
@@ -83,7 +90,7 @@ int getMines (int x, int y) {
   for (int i=x-1; i<x+2; i++) {
     for (int j=y-1; j<y+2; j++) {
       if (i>=0 && j>=0 && i<N && j<N) {
-        if (tableau[i][j]==99) {
+        if (isAMine(tableau[i][j]) {
           compteur++;
         }
       }
@@ -97,7 +104,5 @@ void draw () {
 }
 
 void mouseClicked() {
-  println(mouseX/tailleCellule);
-  println(mouseY/tailleCellule);
   displayCell(mouseX/tailleCellule, mouseY/tailleCellule);
 }
