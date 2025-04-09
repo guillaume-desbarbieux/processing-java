@@ -1,23 +1,22 @@
 int N = 10; // taille du tableau
-int nbMines = 30; // Nombre de Mines initial
+int nbMines = 10; // Nombre de Mines initial
 int tailleCellule = 40; //Taille d'affichage d'une cellule
 color black = color (0);
 color green = color (0, 255, 0);
 color red = color (255, 0, 0);
 color blue = color (0, 0, 255);
-boolean clic = false;
+int tableau[][] = new int[N][N];
 
 
 void setup() {
   // windowResize (N*tailleCellule, N*tailleCellule);
   fullScreen();
-  int[][] tableau = initBoard(N, nbMines);
+  initBoard(N, nbMines);
   displayBoard();
-  draw (tableau);
 }
 
-// fonction qui crée un tableau de la taille indiquée et contenant le nombre de mines demandées.
-int[][] initBoard(int taille, int quantite) {
+// fonction qui remplit le tableau de cases vides et avec le nombre de mines demandées.
+void initBoard(int taille, int quantite) {
 
 
   // Vérifie si le nombre de Mines ne dépasse pas le nombre de cases
@@ -26,7 +25,6 @@ int[][] initBoard(int taille, int quantite) {
   }
 
   // Crée le tableau et le rempli de case vides (0)
-  int tableau[][] = new int[taille][taille];
   for (int i=0; i<taille; i++) {
     for (int j=0; j<taille; j++) {
       tableau[i][j] = 0;
@@ -42,7 +40,6 @@ int[][] initBoard(int taille, int quantite) {
       quantite--;
     }
   }
-  return tableau;
 }
 
 
@@ -56,7 +53,7 @@ void displayBoard () {
   }
 }
 
-void displayCell (int [][] tableau, int i, int j) {
+void displayCell (int i, int j) {
   fill(255);
   rect(i*tailleCellule+1, j*tailleCellule+1, tailleCellule-2, tailleCellule-2, 5);                // change la couleur de fond de la cellule
   fill(black);
@@ -67,7 +64,7 @@ void displayCell (int [][] tableau, int i, int j) {
     fill(red);
     text("Game Over !", tailleCellule, tailleCellule*N/2);                                      // affiche Game Over
   } else {
-    text(getMines(tableau, i, j), (i+0.2)*tailleCellule+1, (j+0.8)*tailleCellule+1);          // affiche nombre de mines voisines
+    text(getMines(i, j), (i+0.2)*tailleCellule+1, (j+0.8)*tailleCellule+1);          // affiche nombre de mines voisines
   }
 }
 
@@ -81,7 +78,7 @@ boolean isAMine (int cellule) {
 
 
 // compte le nombre de Mines voisines
-int getMines (int[][] tableau, int x, int y) {
+int getMines (int x, int y) {
   int compteur=0;
   for (int i=x-1; i<x+2; i++) {
     for (int j=y-1; j<y+2; j++) {
@@ -95,15 +92,12 @@ int getMines (int[][] tableau, int x, int y) {
   return compteur;
 }
 
-void draw (int [][] tableau) {
-  if (clic) {
-    println(mouseX/tailleCellule);
-    println(mouseY/tailleCellule);
-    displayCell(tableau, mouseX/tailleCellule, mouseY/tailleCellule);
-    clic=false;
-  }
+void draw () {
+  
 }
 
 void mouseClicked() {
-  clic=true;
+  println(mouseX/tailleCellule);
+  println(mouseY/tailleCellule);
+  displayCell(mouseX/tailleCellule, mouseY/tailleCellule);
 }
