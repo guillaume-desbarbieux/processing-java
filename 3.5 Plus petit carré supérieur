@@ -1,0 +1,9 @@
+int n=30;
+
+void setup() {
+  int i=0;
+  while (i*i<n) {  
+    i++;
+  }
+  println(n+"<"+i+"x"+i+"="+i*i);
+}
