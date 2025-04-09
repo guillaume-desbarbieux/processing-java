@@ -1,0 +1,14 @@
+int[] board = { 7, 2, 9, 10, 1, -4 };
+
+void setup() {
+  print("La somme des éléments de ce tableau vaut ");
+  print(getSum (board));
+}
+
+int getSum (int[] tableau) {
+  int sum = tableau[0];
+  for (int i=1 ; i<tableau.length ; i++) {
+      sum=sum+tableau[i];
+    }
+  return sum;
+}
