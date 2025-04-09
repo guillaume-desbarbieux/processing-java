@@ -1,8 +1,8 @@
 int position = 0;
-boolean[] chemin = {false, false, true, false, true, false, false, false};
+boolean[] chemin = {false, false, true, false, true, false, true, false, true, false, false, false};
 
 void setup() {
-  while (position<7) {
+  while (position<chemin.length-1) {
     go();
     println(position);
   }
