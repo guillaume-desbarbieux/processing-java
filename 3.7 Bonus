@@ -1,0 +1,12 @@
+int somme=1;
+int fin=23;
+
+void setup() {
+  print(1);
+  for (int i=2 ; i<=fin ; i++) {
+    somme=somme+i;
+    print("+"+i);
+     
+  }
+   print("="+somme);  
+}
