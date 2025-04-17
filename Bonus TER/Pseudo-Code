@@ -1,0 +1,36 @@
+PSEUDO CODE
+
+
+Reduction = 1
+
+Si age < 4
+alors Reduction = 0
+sinon si age < 12
+      alors Reduction = 0.5
+      fin si
+fin si
+
+Selon la valeur de Carte
+      cas = Sureté
+      alors Réduction = 0
+
+      cas = Mobilité
+      alors Réduction = 0.1
+
+      cas = Solidaire
+      alors Réduction = 0.25
+
+      cas = Autocar
+      alors Réduction = 0.7
+
+      cas = Jeune
+      alors Réduction = 0.5
+
+      cas = Liberté
+      alors si Jour = WE
+            alors Réduction = 0.5
+            sinon Reduction = 0.25
+            fin si
+fin Selon
+
+Retourne Prix * Réduction
