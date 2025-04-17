@@ -1,0 +1,7 @@
+création liste des jours de la semaine
+
+SEMAINE = [Dimanche, Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi]
+
+calcule (JOUR % 7 + 1) et le sauve dans INDEX
+
+retourne l'élément n° INDEX de SEMAINE
