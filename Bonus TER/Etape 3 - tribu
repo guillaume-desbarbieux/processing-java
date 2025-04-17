@@ -1,0 +1,135 @@
+final int nb_voyageurs = 5;
+int JOUR = 10;
+int MOIS = 5;
+int ANNEE = 2025;
+final float PRIX_DE_BASE = 10;
+
+final int[] AGES = new int[nb_voyageurs];
+final String[] CARTES = new String[nb_voyageurs];
+
+
+
+final String[] LISTE_CARTES = {"Aucune", "Jeunes", "Liberté", "Autocars", "Solidaire", "Mobilité", "Sureté"};
+
+
+void init_voyage() {
+  JOUR = int(random(28))+1;
+  MOIS = int(random(12))+1;
+  ANNEE = int(random(200))+1900;
+
+  for (int i=0; i< nb_voyageurs; i++) {
+    AGES[i]=int(random(100));
+    CARTES[i]=LISTE_CARTES[int(random(7))];
+  }
+}
+
+
+void setup () {
+  init_voyage();
+
+  float facture = 0;
+  println("Le voyage se passe le ", determine_jour( JOUR, MOIS, ANNEE), " ", JOUR, " ", MOIS, " ", ANNEE);
+  for (int i = 0; i < nb_voyageurs; i++) {
+    float prix = calcule_prix (PRIX_DE_BASE, AGES[i], CARTES[i], JOUR, MOIS, ANNEE);
+    facture += prix;
+    println("Voyageur de ", AGES[i], " ans, avec carte ", CARTES[i], " paye ", prix, "euros");
+  }
+
+  println("La facture totale est de ", facture, "euros");
+}
+
+
+
+
+float calcule_prix (float temp_prix, int temp_age, String temp_carte, int temp_jour, int temp_mois, int temp_annee) {
+
+  float reduction_totale = reduction_carte (temp_carte, temp_jour, temp_mois, temp_annee) * reduction_age (temp_age);
+
+  return temp_prix * reduction_totale;
+}
+
+
+
+float reduction_carte (String temp_carte, int temp_jour, int temp_mois, int temp_annee) {
+
+  float temp_reduction = 1;
+
+  switch (temp_carte) {
+  case "Sureté" :
+    temp_reduction = 0;
+    break;
+  case "Mobilité" :
+    temp_reduction = 0.1;
+    break;
+  case "Solidaire" :
+    temp_reduction = 0.25;
+    break;
+  case "Autocars" :
+    temp_reduction = 0.7;
+    break;
+  case "Jeunes" :
+    temp_reduction = 0.5;
+    break;
+  case "Liberté" :
+    temp_reduction = 0.75;
+    if (is_WE (temp_jour, temp_mois, temp_annee)) {
+      temp_reduction = 0.5;
+    }
+    break;
+  }
+  return temp_reduction;
+}
+
+
+
+float reduction_age (int temp_age) {
+  float temp_reduction = 1;
+  if (temp_age < 4) {
+    temp_reduction = 0;
+  } else if (temp_age < 12) {
+    temp_reduction = 0.5;
+  }
+  return temp_reduction;
+}
+
+
+
+boolean is_WE (int temp_jour, int temp_mois, int temp_annee) {
+  String temp_date = determine_jour (temp_jour, temp_mois, temp_annee);
+  return (temp_date == "Samedi" || temp_date == "Dimanche");
+}
+
+
+String determine_jour (int temp_jour, int temp_mois, int temp_year) {
+  String[] SEMAINE = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
+  int [] longueur_mois = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+
+  if (nb_jour(temp_year)==366) {
+    longueur_mois[1]++;
+  }
+
+  for (int m = temp_mois - 1; m != 0; m--) {
+    temp_jour += longueur_mois[m-1];
+  }
+
+  if (temp_year > 2025) {
+    for (int y = 2025; y != temp_year; y++) {
+      temp_jour += nb_jour(y);
+    }
+  } else {
+    for (int y = 2024; y >= temp_year; y--) {
+      temp_jour +=371 - nb_jour(y);
+    }
+  }
+  return SEMAINE[(temp_jour+2) % 7];
+}
+
+
+int nb_jour (int temp_year) {
+  int answer = 365;
+  if ((temp_year % 4 == 0) && ((temp_year % 100 != 0) || ( temp_year % 400 == 0))) {
+    answer ++;
+  }
+  return answer;
+}
