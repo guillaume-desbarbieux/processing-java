@@ -1,0 +1,79 @@
+void setup() {
+
+  float[][] matrice = make_matrice(5, 4);
+  display_matrice_diagonale (matrice);
+  display_matrice_ligne (matrice, 3);
+  display_matrice_colonne (matrice, 3);
+  
+  
+}
+
+float[][] make_matrice (int taille_x, int taille_y) {
+  float[][] matrice = new float[taille_x][taille_y];
+
+  matrice = init_matrice (matrice);
+
+  display_matrice (matrice);
+
+  
+  return matrice;
+}
+
+float [][] init_matrice (float[][] matrice) {
+  for (int i=0; i<matrice.length; i++) {
+    for (int j=0; j<matrice[i].length; j++) {
+      matrice[i][j] = i+j;
+    }
+  }
+  return matrice;
+}
+
+
+void display_matrice (float[][] matrice) {
+  println("");
+  println("Affichage matrice");
+  for (int i = 0; i < matrice.length; i++) {
+    print("( ");
+    for (int j=0; j<matrice[i].length; j++) {
+      print("  ", matrice[i][j], "  ");
+    }
+    println(" )");
+  }
+}
+
+void display_matrice_diagonale (float[][] matrice) {
+  println("");
+  println("Affichage Diagonale");
+  for (int i = 0; i < matrice.length; i++) {
+    print("( ");
+    for (int j=0; j<matrice[i].length; j++) {
+      if (i==j) {
+        print("  ", matrice[i][j], "  ");
+      } else {
+        print("         ");
+      }
+    }
+    println(" )");
+  }
+}
+
+
+void display_matrice_ligne (float[][] matrice, int ligne) {
+  println("");
+  println("Affichage ligne ",ligne);
+  print("( ");
+  for (int j=0; j<matrice[ligne-1].length; j++) {
+    print("  ", matrice[ligne-1][j], "  ");
+  }
+  println(" )");
+}
+
+void display_matrice_colonne (float[][] matrice, int colonne) {
+  println("");
+  println("Affichage colonne ",colonne);
+  for (int i = 0; i < matrice.length; i++) {
+    print("( ");
+    print("  ", matrice[i][colonne-1], "  ");
+    println(" )");
+  }
+}
