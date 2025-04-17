@@ -101,4 +101,19 @@ float[][] transposee (float[][] matrice) {
   return matrice_transposee;
 }
 
+float [][] produitMatriciel (float[][] matrice_1, float [][] matrice_2) {
+  float[][] matrice_produit = new float[matrice_1.length][matrice_2[0].length];
 
+  for (int i = 0; i < matrice_produit.length; i++) {
+    for (int j = 0; j < matrice_produit[0].length; j++) {
+    
+      faire somme des produits de ligne i de matrice 1 avec colonne j de matrice 2
+  
+}
+  }
+
+
+
+
+  return matrice_produit;
+}
