@@ -1,0 +1,5 @@
+String determine_jour (int jour) {
+  String[] semaine = {"Dimanche" , "Lundi" , "Mardi" , "Mercredi" , "Jeudi" , "Vendredi" , "Samedi"};
+  return semaine[(jour+1)%7];
+}
+  
