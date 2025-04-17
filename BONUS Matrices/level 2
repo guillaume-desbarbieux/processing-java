@@ -1,0 +1,104 @@
+void setup() {
+
+  float[][] matrice = make_matrice(5, 4);
+
+  matrice = additionner_matrices(matrice, matrice);
+  display_matrice (matrice);
+}
+
+float[][] make_matrice (int taille_x, int taille_y) {
+  float[][] matrice = new float[taille_x][taille_y];
+
+  matrice = init_matrice (matrice);
+
+  display_matrice (matrice);
+
+
+  return matrice;
+}
+
+float [][] init_matrice (float[][] matrice) {
+  for (int i=0; i<matrice.length; i++) {
+    for (int j=0; j<matrice[i].length; j++) {
+      matrice[i][j] = i+j;
+    }
+  }
+  return matrice;
+}
+
+
+void display_matrice (float[][] matrice) {
+  println("");
+  println("Affichage matrice");
+  for (int i = 0; i < matrice.length; i++) {
+    print("( ");
+    for (int j=0; j<matrice[i].length; j++) {
+      print("  ", matrice[i][j], "  ");
+    }
+    println(" )");
+  }
+}
+
+void display_matrice_diagonale (float[][] matrice) {
+  println("");
+  println("Affichage Diagonale");
+  for (int i = 0; i < matrice.length; i++) {
+    print("( ");
+    for (int j=0; j<matrice[i].length; j++) {
+      if (i==j) {
+        print("  ", matrice[i][j], "  ");
+      } else {
+        print("         ");
+      }
+    }
+    println(" )");
+  }
+}
+
+
+void display_matrice_ligne (float[][] matrice, int ligne) {
+  println("");
+  println("Affichage ligne ", ligne);
+  print("( ");
+  for (int j=0; j<matrice[ligne-1].length; j++) {
+    print("  ", matrice[ligne-1][j], "  ");
+  }
+  println(" )");
+}
+
+void display_matrice_colonne (float[][] matrice, int colonne) {
+  println("");
+  println("Affichage colonne ", colonne);
+  for (int i = 0; i < matrice.length; i++) {
+    print("( ");
+    print("  ", matrice[i][colonne-1], "  ");
+    println(" )");
+  }
+}
+
+float[][] additionner_matrices (float[][] matrice_1, float[][] matrice_2) {
+
+  float[][] matrice_result = new float [matrice_1.length][matrice_1[0].length];
+
+  for (int i = 0; i < matrice_1.length; i++) {
+
+    for (int j = 0; j < matrice_1[i].length; j++) {
+      matrice_result[i][j] = matrice_1[i][j] + matrice_2[i][j];
+    }
+  }
+
+  return matrice_result;
+}
+
+
+float[][] transposee (float[][] matrice) {
+  float[][] matrice_transposee = new float [matrice[0].length][matrice.length];
+  for (int i = 0; i < matrice.length; i++) {
+    for (int j = 0; j < matrice[i].length; j++) {
+      matrice_transposee[j][i] = matrice[i][j];
+    }
+  }
+  return matrice_transposee;
+}
+
+
