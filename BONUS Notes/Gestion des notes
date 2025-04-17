@@ -1,0 +1,150 @@
+float[] Notes = {0, 13.5, 8.5, 13.7, 20, 12, 8.5, 17, 11, 10, 9.5, 4, 14, 13.5, 12, 1, 15, 10.5, 7.5, 9.5};
+
+void setup () {
+  int[] histo = histogramme (Notes);
+  display_histogramme_horizontal (histo);
+  display_histogramme_vertical (histo);
+}
+
+void afficherNotes() {
+  for (int i=0; i<Notes.length; i++) {
+    println(Notes[i]);
+  }
+}
+
+
+float minimumNote(float[] tableau) {
+  float minimum = tableau[0];
+  for (int i = 1; i < tableau.length; i++) {
+    if (minimum > tableau[i]) {
+      minimum = tableau[i];
+    }
+  }
+  return minimum;
+}
+
+
+float maximumNote(float[] tableau) {
+  float maximum = tableau[0];
+  for (int i = 1; i < tableau.length; i++) {
+    if (maximum < tableau[i]) {
+      maximum = tableau[i];
+    }
+  }
+  return maximum;
+}
+
+
+float calculeMoyenne(float[] tableau) {
+  float somme = 0;
+  for (int i = 0; i < tableau.length; i++) {
+    somme += tableau[i];
+  }
+  return (somme/tableau.length);
+}
+
+
+float calculeVariance(float[] tableau) {
+  float moyenne = calculeMoyenne(tableau);
+  float somme = 0;
+  for (int i = 0; i < tableau.length; i++) {
+    somme += (tableau[i] - moyenne)*(tableau[i] - moyenne);
+  }
+  return somme/tableau.length;
+}
+
+
+float calculeEcartType (float[] tableau) {
+  return sqrt(calculeVariance(tableau));
+}
+
+int rechercherValeur(float[] tableau, float valeur) {
+  int answer = -1;
+  for (int i = 0; i < tableau.length; i++) {
+    if (tableau[i] == valeur) {
+      answer = i;
+    }
+  }
+  return answer;
+}
+
+int[] histogramme (float [] tableau) {
+  int[] histogramme = new int[10];
+  for (int i = 0; i < 10; i++) {
+    histogramme[i] = compte_notes_intervalle(tableau, 2*i, 2*i+2);
+  }
+  histogramme[0] += compte_notes_valeur(tableau, 0);
+  return histogramme;
+}
+
+int compte_notes_intervalle(float[] tableau, float min, float max) {
+  int compteur = 0;
+  for (int i = 0; i<tableau.length; i++) {
+    if ((tableau[i]>min) && (tableau[i] <= max)) {
+      compteur ++;
+    }
+  }
+  return compteur;
+}
+
+int compte_notes_valeur(float[] tableau, float valeur) {
+  int compteur = 0;
+  for (int i = 0; i<tableau.length; i++) {
+    if (tableau[i] == valeur) {
+      compteur ++;
+    }
+  }
+  return compteur;
+}
+
+void display_histogramme_horizontal (int[] histogramme) {
+  for (int i = 0; i<histogramme.length; i++) {
+    print("] ", 2*i, " ; ", 2*i+2, " ] : ");
+    for (int j = 0; j<histogramme[i]; j++) {
+      print("*  ");
+    }
+    println("");
+  }
+}
+
+void display_histogramme_vertical (int[] histogramme) {
+  int max = maximum_histo (histogramme);
+  for (int i = max; i>0; i--) {
+    for (int j = 0; j < histogramme.length; j++) {
+      if (histogramme[j] >= i) {
+        print("    *       ");
+      } else {
+        print("            ");
+      }
+    }
+    println("");
+  }
+    for (int j = 0; j < histogramme.length; j++) {
+      print("------------");
+    }
+    println("");
+    for (int j = 0; j < histogramme.length; j++) {
+      print("]");
+      if (2*j<10) {
+        print(" ");
+      }
+      print(2*j);
+      print(" ; ");
+       if (2*j+2<10) {
+        print(" ");
+      }
+      print(2*j+2,"]  ");
+    }
+  }
+
+
+
+int maximum_histo (int[] tableau) {
+  int maximum = tableau[0];
+  for (int i = 1; i < tableau.length; i++) {
+    if (maximum < tableau[i]) {
+      maximum = tableau[i];
+    }
+  }
+  return maximum;
+}
