@@ -1,1 +1,15 @@
-blbl
+création liste des jours de la semaine
+
+SEMAINE = [Dimanche, Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi]
+
+création de la liste de longueur des mois
+LONGUEUR_MOIS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+Rapporte le calcul au mois de janvier :
+
+
+
+
+calcule (JOUR % 7 + 2) et le sauve dans INDEX
+
+retourne l'élément n° INDEX de SEMAINE
