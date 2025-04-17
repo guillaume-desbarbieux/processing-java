@@ -1,0 +1,16 @@
+void setup() {
+  println(determine_jour (1, 10));
+}
+
+
+
+String determine_jour (int jour, int mois) {
+  String[] semaine = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
+  int [] longueur_mois = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+  while ( mois > 1 ) {
+    jour += longueur_mois[mois-1];
+    mois --;
+  }
+  return semaine[(jour+2) % 7];
+}
