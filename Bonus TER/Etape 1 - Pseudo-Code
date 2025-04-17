@@ -1,35 +1,35 @@
 PSEUDO CODE
 
 
-Reduction = 1
+INITIALISE Reduction à 1
 
-Si age < 4
-alors Reduction = 0
-sinon si age < 12
-      alors Reduction = 0.5
+Si AGE < 4
+alors affecte 0 à Reduction
+sinon si AGE < 12
+      alors affecte 0.5 à Reduction
       fin si
 fin si
 
 Selon la valeur de Carte
-      cas = Sureté
-      alors Réduction = 0
+      dans le cas = Sureté
+      alors affecte 0 à Réduction
 
-      cas = Mobilité
-      alors Réduction = 0.1
+      dans le cas = Mobilité
+      alors affecte 0.1 à Réduction
 
-      cas = Solidaire
-      alors Réduction = 0.25
+      dans le cas = Solidaire
+      alors affecte 0.25 à Réduction 
 
-      cas = Autocar
-      alors Réduction = 0.7
+      dans le cas = Autocar
+      alors affecte 0.7 à Réduction
 
-      cas = Jeune
-      alors Réduction = 0.5
+      dans le cas = Jeune
+      alors affecte 0.5 à Réduction
 
-      cas = Liberté
+      dans le cas = Liberté
       alors si Jour = WE
-            alors Réduction = 0.5
-            sinon Reduction = 0.25
+            alors affecte 0.5 à Réduction
+            sinon affecte 0.25 à Reduction
             fin si
 fin Selon
 
