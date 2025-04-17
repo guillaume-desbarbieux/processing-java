@@ -1,0 +1,39 @@
+void setup() {
+  println(determine_jour (15, 06, 1990));
+}
+
+
+
+String determine_jour (int jour, int mois, int annee) {
+  String[] semaine = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
+  int [] longueur_mois = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+
+  if (nb_jour(annee)==366) {
+    longueur_mois[1]++;
+  }
+
+  for (int m = mois - 1; m != 0; m--) {
+    jour += longueur_mois[m-1];
+  }
+
+  if (annee > 2025) {
+    for (int y = 2025; y != annee; y++) {
+      jour += nb_jour(y);
+    }
+  } else {
+    for (int y = 2024; y >= annee; y--) {
+      jour +=371 - nb_jour(y);
+    }
+  }
+  return semaine[(jour+2) % 7];
+}
+
+
+int nb_jour (int year) {
+  int answer = 365;
+  if ((year % 4 == 0) && ((year % 100 != 0) || ( year % 400 == 0))) {
+    answer ++;
+  }
+  return answer;
+}
