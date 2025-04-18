@@ -1,0 +1,105 @@
+String texte = "IL FAIT BEAU";
+char[] phrase = texte.toCharArray();
+
+void setup () {
+  crypter_phrase(texte);
+}
+
+char[] supprime_espaces (char[] phrase) {
+  int nb_caracteres = 0;
+
+  for (int i = 0; i< phrase.length; i++) {
+    if (phrase[i] != ' ') {
+      nb_caracteres ++;
+    }
+  }
+
+  char[] phrase_compressee = new char[nb_caracteres];
+
+  int index = 0;
+
+  for (int i = 0; i < phrase.length; i++) {
+    if (phrase[i] != ' ') {
+      phrase_compressee[index] = phrase[i];
+      index++;
+    }
+  }
+
+  return phrase_compressee;
+}
+
+
+int compte_caracteres (char[] phrase) {
+  int compteur = 0;
+  char[] phrase_compressee = supprime_espaces(phrase);
+
+  while (phrase_compressee[compteur]!='.') {
+    compteur++;
+  }
+  return compteur;
+}
+
+
+int compte_occurrences (char[] phrase, char a, char b) {
+  int compteur = 0;
+  phrase = supprime_espaces(phrase);
+  for (int i = 0; i<phrase.length-1; i++) {
+    if ((phrase[i] == a) && (phrase[i+1] == b)) {
+      compteur++;
+    }
+  }
+  return compteur;
+}
+
+
+boolean is_palindrome (char[] phrase) {
+  boolean answer = true;
+  phrase = supprime_espaces(phrase);
+  int dernier_caractere = phrase.length -2 ;
+  for (int i = 0; i<=dernier_caractere; i++) {
+    if (phrase[i] != phrase[dernier_caractere - i]) {
+      answer = false;
+    }
+  }
+  return answer;
+}
+
+
+char[] crypter_phrase (String phrase) {
+
+  char[] phrase_tableau = phrase.toCharArray();
+  
+  char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+  char[] tableau_crypte = new char[phrase_tableau.length];
+
+  for (int i = 0; i < phrase_tableau.length; i++) {
+    int index = calcule_index (alphabet, phrase_tableau[i]);
+    if (index < 0) {
+      tableau_crypte[i] = phrase_tableau[i];
+    } else {
+      int decalage = (index + 5)%26;
+      tableau_crypte[i] = alphabet[decalage];
+    }
+  }
+  println("Message en clair");
+  println(phrase);
+  println("Message crypté");
+  for(int i = 0 ; i < tableau_crypte.length ; i++) {
+  print(tableau_crypte[i]);
+  } 
+  println (" ");
+  
+  return tableau_crypte;
+}
+
+
+int calcule_index (char [] alphabet, char lettre) {
+  int index = -1;
+  for (int i = 0; i < alphabet.length; i++) {
+    if (alphabet[i] == lettre) {
+      index = i;
+    }
+  }
+  return index;
+}
