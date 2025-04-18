@@ -1,8 +1,12 @@
+float[][] mat1 = {{1,2,0},{4,3,-1}};
+float[][] mat2 = {{5,1},{2,3},{3,4}};
+
+
 void setup() {
 
   float[][] matrice = make_matrice(5, 4);
 
-  matrice = additionner_matrices(matrice, matrice);
+  matrice = produitMatriciel(mat1, mat2);
   display_matrice (matrice);
 }
 
@@ -106,14 +110,12 @@ float [][] produitMatriciel (float[][] matrice_1, float [][] matrice_2) {
 
   for (int i = 0; i < matrice_produit.length; i++) {
     for (int j = 0; j < matrice_produit[0].length; j++) {
-    
-      faire somme des produits de ligne i de matrice 1 avec colonne j de matrice 2
-  
-}
+      float somme = 0;
+      for (int k = 0; k < matrice_2.length; k++) {
+        somme += matrice_1[i][k] * matrice_2[k][j];
+      }
+      matrice_produit [i][j] = somme;
+    }
   }
-
-
-
-
   return matrice_produit;
 }
