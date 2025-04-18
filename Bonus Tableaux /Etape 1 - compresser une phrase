@@ -1,0 +1,31 @@
+String texte = " Il fait beau  . ";
+char[] phrase = texte.toCharArray();
+
+void setup () {
+  println(phrase);
+  phrase = supprime_espaces (phrase);
+  println(phrase);
+}
+
+char[] supprime_espaces (char[] phrase) {
+  int nb_caracteres = 0;
+
+  for (int i = 0; i< phrase.length; i++) {
+    if (phrase[i] != ' ') {
+      nb_caracteres ++;
+    }
+  }
+
+  char[] phrase_compressee = new char[nb_caracteres];
+
+  int index = 0;
+
+  for (int i = 0; i < phrase.length; i++) {
+    if (phrase[i] != ' ') {
+      phrase_compressee[index] = phrase[i];
+      index++;
+    }
+  }
+
+  return phrase_compressee;
+}
