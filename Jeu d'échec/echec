@@ -1,0 +1,112 @@
+int[][][] plateau = new int[9][9][4];
+
+// Coordonnées sur le plateau
+final int A = 1;
+final int B = 2;
+final int C = 3;
+final int D = 4;
+final int E = 5;
+final int F = 6;
+final int G = 7;
+final int H = 8;
+
+// Liste des pièces
+final int PION = 9;
+final int TOUR = 10 ;
+final int CAVALIER = 11;
+final int FOU = 12;
+final int ROI = 13;
+final int REINE = 14;
+
+// Liste des couleurs
+final int BLANC = 15;
+final int NOIR = 16;
+final int VIDE = 0;
+
+// Informations du plateau
+final int PIECE = 0;
+final int COLOR = 1;
+
+
+// Autres variables
+int player = BLANC;
+int possible_moves = 0;
+
+void init_plateau () {
+  player = BLANC;
+  for (int i = A; i <= H; i++) {
+    for (int j = 1; j <= 8; j++) {
+      plateau[i][j][PIECE] = VIDE;
+      switch (i) {
+      case 1 :
+        plateau[i][j][COLOR] = BLANC;
+        break;
+      case 8 :
+        plateau[i][j][COLOR] = NOIR;
+        break;
+      default :
+        plateau[i][j][COLOR] = VIDE;
+        break;
+      }
+    }
+  }
+  for (int j = 1; j<=8; j=j+7) {
+    plateau[A][j][PIECE] = TOUR;
+    plateau[B][j][PIECE] = CAVALIER;
+    plateau[C][j][PIECE] = FOU;
+    plateau[D][j][PIECE] = REINE;
+    plateau[E][j][PIECE] = ROI;
+    plateau[F][j][PIECE] = FOU;
+    plateau[G][j][PIECE] = CAVALIER;
+    plateau[H][j][PIECE] = TOUR;
+  }
+}
+
+void count_possible_moves (int player) {
+  possible_moves = 0;
+  for (int i = A; i <= H; i++) {
+    for (int j = 1; j <= 8; j++) {
+      switch (plateau[i][j][PIECE]) {
+        case (PION) :
+        possible_moves += count_moves_PION (i, j);
+        break;
+        case (TOUR) :
+        possible_moves += count_moves_TOUR (i, j);
+        break;
+        case (FOU) :
+        possible_moves += count_moves_FOU (i, j);
+        break;
+        case (CAVALIER) :
+        possible_moves += count_moves_CAVALIER (i, j);
+        break;
+        case (REINE) :
+        possible_moves += count_moves_REINE (i, j);
+        break;
+        case (ROI) :
+        possible_moves += count_moves_ROI (i, j);
+        break;
+      }
+    }
+  }
+}
+
+int count_moves_PION (int i, int j) {
+  int counter = 0;
+  switch (plateau[i][j][COLOR]) {
+  case BLANC :
+  if (j<8) {
+    if (plateau[i][j+1][PIECE] = VIDE){
+      if (verifie_echec(player,i,j,i,j+1)) {
+        /// compte si case libre et si ce mouv ne mets pas en echec son propre roi
+    
+  if (i>A) {
+    if (plateau[i-1][j]
+  
+  
+  
+  }
+}
+
+void setup () {
+  size(100, 100);
+}
