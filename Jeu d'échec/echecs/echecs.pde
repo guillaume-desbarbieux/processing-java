@@ -62,15 +62,24 @@ final int SELECTED = 1;
 final int PLACED = 2;
 int clic_step = WAITING;
 
+// Gestion de la case sélectionnée
 int selected_i = 0;
 int selected_j = 0;
 IntList current_list_of_possible_moves = new IntList();
 
+// Gestion du statut de la partie
 final int PLAYING = 1;
 final int MAT = 2;
 final int PAT = 3;
-final int NULl = 4;
+final int NULL = 4;
+final int TIME_OUT = 5;
 int status = PLAYING;
+
+// Gestion temps et coups
+int time_last_display = millis();
+float timer_blanc = 600;
+float timer_noir = 600;
+IntList hystory_of_moves = new IntList();
 
 void init_plateau () {
   active_player = BLANC;
@@ -471,33 +480,33 @@ void display_plateau() {
     }
   }
   display_possible_moves(current_list_of_possible_moves);
-
-  if (status != PLAYING) {
-    display_end();
-  }
 }
 
 void display_end() {
   fill(255, 0, 0);
-   textAlign(CENTER, CENTER);
   textSize(TAILLE_CASE);
   switch (status) {
   case MAT :
-
-
     text("Echec et Mat", 4.5*TAILLE_CASE, 4.5*TAILLE_CASE);
     println("mat");
     break;
   case PAT :
-    fill(255, 0, 0);
     text("PAT", 4*TAILLE_CASE, 4*TAILLE_CASE);
     println("pat");
+    break;
+  case NULL :
+    text("NULLE", 4*TAILLE_CASE, 4*TAILLE_CASE);
+    println("Null");
+    break;
+  case TIME_OUT :
+    text("Time Out", 4*TAILLE_CASE, 4*TAILLE_CASE);
+    println("time out");
     break;
   }
 }
 
 void display_case ( int i, int j) {
-  int k = j;
+  int k = 9-j;
   if ((i==selected_i) && (j==selected_j)) {
     fill(COLOR_SELECTED);
   } else if ((i+j)%2 == 0) {
@@ -509,7 +518,7 @@ void display_case ( int i, int j) {
 }
 
 void display_piece (int i, int j) {
-  int k = j;
+  int k = 9-j;
   switch (plateau[i][j][PIECE]) {
   case PION :
     if (plateau[i][j][COLOR] == BLANC) {
@@ -593,7 +602,7 @@ void display_possible_moves (IntList list) {
 
   for (int i = 0; i < list.size(); i = i+2) {
     fill (206, 206, 206);
-    ellipse(list.get(i)*TAILLE_CASE, list.get(i+1)*TAILLE_CASE, TAILLE_CASE/3, TAILLE_CASE/3);
+    ellipse(list.get(i)*TAILLE_CASE, (9-list.get(i+1))*TAILLE_CASE, TAILLE_CASE/3, TAILLE_CASE/3);
   }
 }
 
@@ -607,6 +616,8 @@ void setup () {
 
   imageMode(CENTER);
   rectMode(CENTER);
+  textAlign(CENTER, CENTER);
+  textSize(TAILLE_CASE);
 
   pion_n = loadImage("pion_n.png");
   roi_n = loadImage("roi_n.png");
@@ -632,6 +643,37 @@ void setup () {
 }
 
 void draw () {
+  display_timer();
+  if (status != PLAYING) {
+    display_end();
+  }
+}
+
+void display_timer() {
+  if (status == PLAYING) {
+    switch (active_player) {
+    case BLANC :
+      timer_blanc -= float(millis()-time_last_display)/1000;
+      break;
+    case NOIR :
+      timer_noir -= float(millis()-time_last_display)/1000;
+      break;
+    }
+    time_last_display = millis();
+
+    fill (255);
+    rect(TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
+    rect(TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
+
+    fill(0);
+    textSize(TAILLE_CASE/2);
+    text(int(timer_blanc), TAILLE_CASE, 8.75*TAILLE_CASE);
+    text(int(timer_noir), TAILLE_CASE, 0.25*TAILLE_CASE);
+
+    if (int(timer_blanc) <= 0 || int(timer_noir) <= 0) {
+      status = TIME_OUT;
+    }
+  }
 }
 
 void mousePressed() {
@@ -640,14 +682,15 @@ void mousePressed() {
     clic_X = mouseX;
     clic_Y = mouseY;
   }
-
-  switch (clic_step) {
-  case WAITING :
-    make_selecting();
-    break;
-  case SELECTED :
-    make_targeting();
-    break;
+  if (status == PLAYING) {
+    switch (clic_step) {
+    case WAITING :
+      make_selecting();
+      break;
+    case SELECTED :
+      make_targeting();
+      break;
+    }
   }
   println("fin MousePressed");
   print_plateau(plateau);
@@ -660,7 +703,7 @@ void make_selecting() {
   print_plateau(plateau);
 
   selected_i = convert_clic_to_board(clic_X);
-  selected_j = convert_clic_to_board(clic_Y);
+  selected_j = 9-convert_clic_to_board(clic_Y);
 
   if (plateau[selected_i][selected_j][COLOR] == active_player) {
     current_list_of_possible_moves = make_list_possible_moves (plateau, selected_i, selected_j);
@@ -682,7 +725,7 @@ void make_targeting() {
   println("make_targeting");
 
   int k = convert_clic_to_board(clic_X);
-  int l = convert_clic_to_board(clic_Y);
+  int l = 9-convert_clic_to_board(clic_Y);
 
   if (is_move_in_list (current_list_of_possible_moves, k, l)) {
     make_move (selected_i, selected_j, k, l);
@@ -708,10 +751,18 @@ boolean is_move_in_list (IntList list, int i, int j) {
 
 void make_move (int i, int j, int k, int l) {
   println("make_move pour ", i, ",", j, " to ", k, ",", l);
+  hystory_of_moves.append(i);
+  hystory_of_moves.append(j);
+  hystory_of_moves.append(k);
+  hystory_of_moves.append(l);
   plateau[k][l][PIECE] = plateau[i][j][PIECE];
   plateau[k][l][COLOR] = plateau[i][j][COLOR];
   plateau[i][j][PIECE] = VIDE;
   plateau[i][j][COLOR] = VIDE;
+  
+  if ((plateau[k][l][PIECE] == PION) && (l==8 || l==1)){
+    make_promotion(k, l);
+  }
 
   if (active_player == BLANC) {
     active_player = NOIR;
@@ -730,6 +781,32 @@ void make_move (int i, int j, int k, int l) {
   }
 }
 
+
+void make_promotion(int i, int j) {
+  switch (j){
+    case 1:
+    fill(255);
+    rect(4.5*TAILLE_CASE,8.75*TAILLE_CASE,4*TAILLE_CASE,TAILLE_CASE/2);
+   image(reine_n, 3*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   image(tour_n, 4*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   image(fou_n, 5*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   image(cavalier_n, 6*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   break;
+   case 8 :
+   fill(0);
+   rect(4.5*TAILLE_CASE,0.25*TAILLE_CASE,4*TAILLE_CASE,TAILLE_CASE/2);
+   image(reine_b, 3*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   image(tour_b, 4*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   image(fou_b, 5*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   image(cavalier_b, 6*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+   break;
+   
+   // ajouter le choix de la pièce à promouvoir par clic
+   // remplacer pion concerné par pièce choisie
+   // trouver un moyen de l'intégrer à l'historique 
+   // effacer sur l'écran la zone de choix pour la promotion
+  }
+}
 
 boolean clic_in_board() {
   return ((mouseX > TAILLE_CASE/2) && (mouseX < TAILLE_CASE*8.5) && (mouseY > TAILLE_CASE/2) && (mouseY < TAILLE_CASE*8.5));
