@@ -36,8 +36,8 @@ final int PIECE = 0;
 final int COLOR = 1;
 
 // Joueur actif
-int active_player = NOIR;
-IntList selected_list_of_possible_moves = new IntList();
+int active_player = BLANC;
+
 
 // Images des pièces
 PImage roi_b;
@@ -62,14 +62,18 @@ final int SELECTED = 1;
 final int PLACED = 2;
 int clic_step = WAITING;
 
-int SELECTED_SQUARE_X = 0;
-int SELECTED_SQUARE_Y = 0;
+int selected_i = 0;
+int selected_j = 0;
+IntList current_list_of_possible_moves = new IntList();
 
-
-
+final int PLAYING = 1;
+final int MAT = 2;
+final int PAT = 3;
+final int NULl = 4;
+int status = PLAYING;
 
 void init_plateau () {
-  active_player = NOIR;
+  active_player = BLANC;
   for (int i = A; i <= H; i++) {
     for (int j = 1; j <= 8; j++) {
       plateau[i][j][PIECE] = VIDE;
@@ -101,49 +105,30 @@ void init_plateau () {
     plateau[G][j][PIECE] = CAVALIER;
     plateau[H][j][PIECE] = TOUR;
   }
-  println("after init_plateau");
-  print_plateau(plateau);
 }
 
 void print_plateau(int[][][] temp_plateau) {
-  for (int j = 1; j<=8; j++) {
-    println("");
-    for (int i = 1; i<=8; i++) {
+  //for (int j = 1; j<=8; j++) {
+  //  println("");
+  //  for (int i = 1; i<=8; i++) {
 
-      print(temp_plateau[i][j][PIECE], ",", temp_plateau[i][j][COLOR], " - ");
-    }
-  }
-  println("");
-  println("");
+  //    print(temp_plateau[i][j][PIECE], ",", temp_plateau[i][j][COLOR], " - ");
+  //  }
+  //}
+  //println("");
+  //println("");
 }
 
 
 
-int count_possible_moves (int active_player, int[][][] temp_board) {
+int count_possible_moves (int player, int[][][] temp_board) {
   int number_of_possible_moves = 0;
   for (int i = A; i <= H; i++) {
     for (int j = 1; j <= 8; j++) {
-      if (temp_board[i][j][COLOR] == active_player) {
-        switch (temp_board[i][j][PIECE]) {
-          case (PION) :
-          number_of_possible_moves += list_moves_PION (temp_board, i, j).size();
-          break;
-          case (TOUR) :
-          number_of_possible_moves += list_moves_TOUR (temp_board, i, j).size();
-          break;
-          case (FOU) :
-          number_of_possible_moves += list_moves_FOU (temp_board, i, j).size();
-          break;
-          case (CAVALIER) :
-          number_of_possible_moves += list_moves_CAVALIER (temp_board, i, j).size();
-          break;
-          case (REINE) :
-          number_of_possible_moves += list_moves_REINE (temp_board, i, j).size();
-          break;
-          case (ROI) :
-          number_of_possible_moves += list_moves_ROI (temp_board, i, j).size();
-          break;
-        }
+      if (temp_board[i][j][COLOR] == player) {
+        IntList list = make_list_possible_moves (temp_board, i, j);
+        list = verifie_list_possible_moves(temp_board, i, j, list);
+        number_of_possible_moves += list.size();
       }
     }
   }
@@ -153,39 +138,35 @@ int count_possible_moves (int active_player, int[][][] temp_board) {
 
 
 IntList list_moves_PION (int[][][] temp_board, int i, int j) {
-  IntList list_of_possible_moves = new IntList();
+
+  IntList list = new IntList();
+
   switch (temp_board[i][j][COLOR]) {
+
   case BLANC :
     if (j<8) {
       if (temp_board[i][j+1][PIECE] == VIDE) {
-        if (!verifie_echec_mouvement(temp_board, active_player, i, j, i, j+1)) {
-          list_of_possible_moves.append(i);
-          list_of_possible_moves.append(j+1);
-        }
+        list.append(i);
+        list.append(j+1);
       }
+
       if (i>A) {
         if (temp_board[i-1][j+1][COLOR] == NOIR) {
-          if (!verifie_echec_mouvement(temp_board, active_player, i, j, i-1, j+1)) {
-            list_of_possible_moves.append(i-1);
-            list_of_possible_moves.append(j+1);
-          }
+          list.append(i-1);
+          list.append(j+1);
         }
       }
       if (i<H) {
         if (temp_board[i+1][j+1][COLOR] == NOIR) {
-          if (!verifie_echec_mouvement(temp_board, active_player, i, j, i+1, j+1)) {
-            list_of_possible_moves.append(i+1);
-            list_of_possible_moves.append(j+1);
-          }
+          list.append(i+1);
+          list.append(j+1);
         }
       }
     }
     if (j == 2) {
       if (temp_board[i][j+2][PIECE] == VIDE) {
-        if (!verifie_echec_mouvement(temp_board, active_player, i, j, i, j+2)) {
-          list_of_possible_moves.append(i);
-          list_of_possible_moves.append(j+2);
-        }
+        list.append(i);
+        list.append(j+2);
       }
     }
     break;
@@ -193,53 +174,46 @@ IntList list_moves_PION (int[][][] temp_board, int i, int j) {
   case NOIR :
     if (j>1) {
       if (temp_board[i][j-1][PIECE] == VIDE) {
-        if (!verifie_echec_mouvement(temp_board, active_player, i, j, i, j-1)) {
-          list_of_possible_moves.append(i);
-          list_of_possible_moves.append(j-1);
-        }
+        list.append(i);
+        list.append(j-1);
       }
       if (i>A) {
-        if (temp_board[i-1][j-1][COLOR] == NOIR) {
-          if (!verifie_echec_mouvement(temp_board, active_player, i, j, i-1, j-1)) {
-            list_of_possible_moves.append(i-1);
-            list_of_possible_moves.append(j-1);
-          }
+        if (temp_board[i-1][j-1][COLOR] == BLANC) {
+          list.append(i-1);
+          list.append(j-1);
         }
       }
       if (i<H) {
-        if (temp_board[i+1][j-1][COLOR] == NOIR) {
-          if (!verifie_echec_mouvement(temp_board, active_player, i, j, i+1, j-1)) {
-            list_of_possible_moves.append(i+1);
-            list_of_possible_moves.append(j-1);
-          }
+        if (temp_board[i+1][j-1][COLOR] == BLANC) {
+          list.append(i+1);
+          list.append(j-1);
         }
       }
     }
     if (j == 7) {
       if (temp_board[i][j-2][PIECE] == VIDE) {
-        if (!verifie_echec_mouvement(temp_board, active_player, i, j, i, j-2)) {
-          list_of_possible_moves.append(i);
-          list_of_possible_moves.append(j-2);
-        }
+        list.append(i);
+        list.append(j-2);
       }
     }
     break;
   }
-  return  list_of_possible_moves;
+  println("list_move_pion", i, ",", j, " : ", list);
+  print_plateau(temp_board);
+  return list;
 }
 
 
 
 IntList list_moves_TOUR (int[][][] temp_board, int i, int j) {
-  IntList list_of_possible_moves = new IntList();
+  IntList list = new IntList();
+  int player = temp_board[i][j][COLOR];
 
   // Vérification mouvement ves la droite
   for (int d = 1; i+d <= H; d++) {
-    if (temp_board[i+d][j][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i+d, j)) {
-        list_of_possible_moves.append(i+d);
-        list_of_possible_moves.append(j);
-      }
+    if (temp_board[i+d][j][COLOR] != player) {
+      list.append(i+d);
+      list.append(j);
     }
     if (temp_board[i+d][j][COLOR] != VIDE) {
       d=8;
@@ -248,11 +222,9 @@ IntList list_moves_TOUR (int[][][] temp_board, int i, int j) {
 
   // Vérification mouvement ves la gauche
   for (int d = 1; i-d >= A; d++) {
-    if (temp_board[i-d][j][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i-d, j)) {
-        list_of_possible_moves.append(i-d);
-        list_of_possible_moves.append(j);
-      }
+    if (temp_board[i-d][j][COLOR] != player) {
+      list.append(i-d);
+      list.append(j);
     }
     if (temp_board[i-d][j][COLOR] != VIDE) {
       d=8;
@@ -261,11 +233,9 @@ IntList list_moves_TOUR (int[][][] temp_board, int i, int j) {
 
   // Vérification mouvement ves le bas
   for (int d = 1; j-d >= 1; d++) {
-    if (temp_board[i][j-d][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i, j-d)) {
-        list_of_possible_moves.append(i);
-        list_of_possible_moves.append(j-d);
-      }
+    if (temp_board[i][j-d][COLOR] != player) {
+      list.append(i);
+      list.append(j-d);
     }
     if (temp_board[i][j-d][COLOR] != VIDE) {
       d=8;
@@ -274,31 +244,29 @@ IntList list_moves_TOUR (int[][][] temp_board, int i, int j) {
 
   // Vérification mouvement ves le haut
   for (int d = 1; j+d <= 8; d++) {
-    if (temp_board[i][j+d][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i, j+d)) {
-        list_of_possible_moves.append(i);
-        list_of_possible_moves.append(j+d);
-      }
+    if (temp_board[i][j+d][COLOR] != player) {
+      list.append(i);
+      list.append(j+d);
     }
     if (temp_board[i][j+d][COLOR] != VIDE) {
       d=8;
     }
   }
-  return list_of_possible_moves;
+  println("list_move_tour", i, ",", j, " : ", list);
+  return list;
 }
 
 
 
 IntList list_moves_FOU (int[][][] temp_board, int i, int j) {
-  IntList list_of_possible_moves = new IntList();
+  IntList list = new IntList();
+  int player = temp_board[i][j][COLOR];
 
   // Vérification mouvement vers diagonale haut droite
   for (int d = 1; (i+d <= H) && (j+d <= 8); d++) {
-    if (temp_board[i+d][j+d][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i+d, j+d)) {
-        list_of_possible_moves.append(i+d);
-        list_of_possible_moves.append(j+d);
-      }
+    if (temp_board[i+d][j+d][COLOR] != player) {
+      list.append(i+d);
+      list.append(j+d);
     }
     if (temp_board[i+d][j+d][COLOR] != VIDE) {
       d=8;
@@ -307,11 +275,9 @@ IntList list_moves_FOU (int[][][] temp_board, int i, int j) {
 
   // Vérification mouvement vers diagonale bas droite
   for (int d = 1; (i+d <= H) && (j-d >= 1); d++) {
-    if (temp_board[i+d][j-d][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i+d, j-d)) {
-        list_of_possible_moves.append(i+d);
-        list_of_possible_moves.append(j-d);
-      }
+    if (temp_board[i+d][j-d][COLOR] != player) {
+      list.append(i+d);
+      list.append(j-d);
     }
     if (temp_board[i+d][j-d][COLOR] != VIDE) {
       d=8;
@@ -320,11 +286,9 @@ IntList list_moves_FOU (int[][][] temp_board, int i, int j) {
 
   // Vérification mouvement vers diagonale bas gauche
   for (int d = 1; (i-d >= A) && (j-d >= 1); d++) {
-    if (temp_board[i-d][j-d][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i-d, j-d)) {
-        list_of_possible_moves.append(i-d);
-        list_of_possible_moves.append(j-d);
-      }
+    if (temp_board[i-d][j-d][COLOR] != player) {
+      list.append(i-d);
+      list.append(j-d);
     }
     if (temp_board[i-d][j-d][COLOR] != VIDE) {
       d=8;
@@ -333,155 +297,171 @@ IntList list_moves_FOU (int[][][] temp_board, int i, int j) {
 
   // Vérification mouvement vers diagonale haut gauche
   for (int d = 1; (i-d >= A) && (j+d <= 8); d++) {
-    if (temp_board[i-d][j+d][COLOR] != active_player) {
-      if (!verifie_echec_mouvement(temp_board, active_player, i, j, i-d, j+d)) {
-        list_of_possible_moves.append(i-d);
-        list_of_possible_moves.append(j+d);
-      }
+    if (temp_board[i-d][j+d][COLOR] != player) {
+      list.append(i-d);
+      list.append(j+d);
     }
     if (temp_board[i-d][j+d][COLOR] != VIDE) {
       d=8;
     }
   }
-  return  list_of_possible_moves;
+  println("list_move_fou", i, ",", j, " : ", list);
+  return  list;
 }
 
 
 
 IntList list_moves_REINE (int[][][] temp_board, int i, int j) {
-  IntList list_of_possible_moves = new IntList();
-  list_of_possible_moves.append(list_moves_TOUR (temp_board, i, j));
-  list_of_possible_moves.append(list_moves_FOU (temp_board, i, j));
-  return list_of_possible_moves;
+  IntList list = new IntList();
+  list.append(list_moves_TOUR (temp_board, i, j));
+  list.append(list_moves_FOU (temp_board, i, j));
+  return list;
 }
 
 
 
 IntList list_moves_ROI (int[][][] temp_board, int i, int j) {
-  IntList list_of_possible_moves = new IntList();
+  int player = temp_board[i][j][COLOR];
+  IntList list = new IntList();
   for (int x = i-1; x <= i+1; x++) {
     for (int y = j-1; y <= j+1; y++) {
       if ((x>=A) && (x<=H) && (y>=1) && (y<=8)) {
-        if ((temp_board[x][y][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, x, y))) {
-          list_of_possible_moves.append(x);
-          list_of_possible_moves.append(y);
+        if (temp_board[x][y][COLOR] != player) {
+          list.append(x);
+          list.append(y);
         }
       }
     }
   }
-  return list_of_possible_moves;
+  println("list_moves_roi", i, ",", j, " : ", list);
+  return list;
 }
 
 
 
 IntList list_moves_CAVALIER (int[][][] temp_board, int i, int j) {
-  IntList list_of_possible_moves = new IntList();
+  IntList list = new IntList();
+  int player = temp_board[i][j][COLOR];
   if ((i<=G) && (j<=6)) {
-    if ((temp_board[i+1][j+2][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i+1, j+2))) {
-      list_of_possible_moves.append(i+1);
-      list_of_possible_moves.append(j+2);
+    if (temp_board[i+1][j+2][COLOR] != player) {
+      list.append(i+1);
+      list.append(j+2);
     }
   }
   if ((i<=F) && (j<=7)) {
-    if ((temp_board[i+2][j+1][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i+2, j+1))) {
-      list_of_possible_moves.append(i+2);
-      list_of_possible_moves.append(j+1);
+    if (temp_board[i+2][j+1][COLOR] != player) {
+      list.append(i+2);
+      list.append(j+1);
     }
   }
   if ((i<=F) && (j>=2)) {
-    if ((temp_board[i+2][j-1][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i+2, j-1))) {
-      list_of_possible_moves.append(i+2);
-      list_of_possible_moves.append(j-1);
+    if (temp_board[i+2][j-1][COLOR] != player) {
+      list.append(i+2);
+      list.append(j-1);
     }
   }
   if ((i<=G) && (j>=3)) {
-    if ((temp_board[i+1][j-2][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i+1, j-2))) {
-      list_of_possible_moves.append(i+1);
-      list_of_possible_moves.append(j-2);
+    if (temp_board[i+1][j-2][COLOR] != player) {
+      list.append(i+1);
+      list.append(j-2);
     }
   }
   if ((i>=B) && (j>=3)) {
-    if ((temp_board[i-1][j-2][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i-1, j-2))) {
-      list_of_possible_moves.append(i-1);
-      list_of_possible_moves.append(j-2);
+    if (temp_board[i-1][j-2][COLOR] != player) {
+      list.append(i-1);
+      list.append(j-2);
     }
   }
   if ((i>=C) && (j>=2)) {
-    if ((temp_board[i-2][j-1][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i-2, j-1))) {
-      list_of_possible_moves.append(i-2);
-      list_of_possible_moves.append(j-1);
+    if (temp_board[i-2][j-1][COLOR] != player) {
+      list.append(i-2);
+      list.append(j-1);
     }
   }
   if ((i>=C) && (j<=7)) {
-    if ((temp_board[i-2][j+1][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i-2, j+1))) {
-      list_of_possible_moves.append(i-2);
-      list_of_possible_moves.append(j+1);
+    if (temp_board[i-2][j+1][COLOR] != player) {
+      list.append(i-2);
+      list.append(j+1);
     }
   }
   if ((i>=B) && (j<=6)) {
-    if ((temp_board[i-1][j+2][COLOR] != active_player) && (!verifie_echec_mouvement(temp_board, active_player, i, j, i-1, j+2))) {
-      list_of_possible_moves.append(i-1);
-      list_of_possible_moves.append(j+2);
+    if (temp_board[i-1][j+2][COLOR] != player) {
+      list.append(i-1);
+      list.append(j+2);
     }
   }
-  return list_of_possible_moves;
+  println("list_moves_cavalier", i, ",", j, " : ", list);
+  return list;
 }
 
+IntList verifie_list_possible_moves (int[][][] board, int i, int j, IntList list) {
 
-boolean verifie_echec_mouvement (int [][][] temp_board, int player, int i, int j, int x, int y) {
-  println("verifie echec mouvement");
-  print_plateau(plateau);
-  int [][][] futur_plateau = temp_board;
-  futur_plateau[i][j][PIECE] = VIDE;
-  futur_plateau[i][j][COLOR] = VIDE;
-  futur_plateau[x][y][PIECE] = temp_board[i][j][PIECE];
-  futur_plateau[x][y][PIECE] = temp_board[i][j][COLOR];
+  println("début fonction vérifie liste pour déplacer ", i, ",", j, " vers ", list, " sur plateau.");
+  println("sachant que cette case contient ", board[i][j][PIECE], ",", board[i][j][COLOR]);
 
-  return verifie_echec_global (player, futur_plateau);
+  for (int k = 0; k < list.size(); k = k +2) {
+    println("On vérifie le déplacement n° ", 1+k/2, " pour liste ", list);
+    println("sachant que cette case contient ", board[i][j][PIECE], ",", board[i][j][COLOR]);
+    int[][][] test_board = copy_board(board);
+    println("déclaration test_board / sachant que cette case contient ", board[i][j][PIECE], ",", board[i][j][COLOR]);
+    println("déclaration test_board / sachant que cette case contient en simulé ", test_board[i][j][PIECE], ",", test_board[i][j][COLOR]);
+    test_board[i][j][PIECE] = VIDE;
+    test_board[i][j][COLOR] = VIDE;
+    println("on vide test_board sachant que cette case contient en réalité ", board[i][j][PIECE], ",", board[i][j][COLOR]);
+    println("on vide test board sachant que cette case contient en simulé ", test_board[i][j][PIECE], ",", test_board[i][j][COLOR]);
+    test_board[list.get(k)][list.get(k+1)][PIECE] = board[i][j][PIECE];
+    test_board[list.get(k)][list.get(k+1)][COLOR] = board[i][j][COLOR];
+    println("Vérifie validité du coup ", i, ",", j, " vers ", list.get(k), ",", list.get(k+1));
+    println("sachant que cette case contient en réalité ", board[i][j][PIECE], ",", board[i][j][COLOR]);
+    println("sachant que cette case contient en simulé ", test_board[i][j][PIECE], ",", test_board[i][j][COLOR]);
+    if (verifie_echec (test_board, board[i][j][COLOR])) {
+      list.remove(k);
+      list.remove(k);
+      k = k-2;
+    }
+  }
+  println("fin verifie_list_possible. cette case contient ", board[i][j][PIECE], ",", board[i][j][COLOR]);
+  return list;
 }
 
-
-boolean verifie_echec_global (int player, int[][][] temp_board) {
+boolean verifie_echec (int[][][] board, int player) {
   boolean answer = false;
-  for (int i = A; i<= H; i++) {
-    for (int j = 1; j <= 8; j++) {
-      if ((temp_board[i][j][COLOR] != player) && (temp_board[i][j][COLOR] != VIDE)) {
-        answer = answer || verifie_echec_local (temp_board, i, j);
-      }
-    }
+  int adversaire = BLANC;
+
+  if (player == BLANC) {
+    adversaire = NOIR;
   }
-  return answer;
-}
 
+  IntList list = make_list_of_all_possible_moves (board, adversaire);
 
-boolean verifie_echec_local (int[][][] temp_board, int i, int j) {
-  boolean answer  = false;
-  IntList list_of_possible_moves = new IntList();
+  for (int k = 0; k < list.size(); k=k+2) {
 
-  switch (temp_board[i][j][PIECE]) {
-  case PION :
-    list_of_possible_moves = list_moves_PION (temp_board, i, j);
-    break;
-  case TOUR :
-    list_of_possible_moves = list_moves_TOUR (temp_board, i, j);
-    break;
-  case FOU :
-    list_of_possible_moves = list_moves_FOU (temp_board, i, j);
-    break;
-  case CAVALIER :
-    list_of_possible_moves = list_moves_CAVALIER (temp_board, i, j);
-    break;
-  case REINE :
-    list_of_possible_moves = list_moves_REINE (temp_board, i, j);
-    break;
-  }
-  for (int x = 0; x < list_of_possible_moves.size(); x=x+2) {
-    if  (temp_board[list_of_possible_moves.get(x)][list_of_possible_moves.get(x+1)][PIECE] == ROI) {
+    int i = list.get(k);
+    int j = list.get(k+1);
+
+    if ((board[i][j][PIECE] == ROI) && (board[i][j][COLOR] == player)) {
       answer = true;
     }
   }
+  println("fonction vérifie échec pour ", player, " dans liste ", list, " répond ", answer);
   return answer;
 }
+
+IntList make_list_of_all_possible_moves (int[][][] board, int player) {
+
+  IntList list = new IntList ();
+
+  for (int i = A; i <= H; i++) {
+    for (int j = 1; j <= 8; j++) {
+      if (board[i][j][COLOR] == player) {
+        list.append(make_list_possible_moves(board, i, j));
+      }
+    }
+  }
+
+  return list;
+}
+
 
 void display_plateau() {
   for (int i = A; i <= H; i++) {
@@ -490,14 +470,35 @@ void display_plateau() {
       display_piece(i, j);
     }
   }
-  println("avant display possible move");
-  print_plateau(plateau);
-  display_possible_moves();
+  display_possible_moves(current_list_of_possible_moves);
+
+  if (status != PLAYING) {
+    display_end();
+  }
+}
+
+void display_end() {
+  fill(255, 0, 0);
+   textAlign(CENTER, CENTER);
+  textSize(TAILLE_CASE);
+  switch (status) {
+  case MAT :
+
+
+    text("Echec et Mat", 4.5*TAILLE_CASE, 4.5*TAILLE_CASE);
+    println("mat");
+    break;
+  case PAT :
+    fill(255, 0, 0);
+    text("PAT", 4*TAILLE_CASE, 4*TAILLE_CASE);
+    println("pat");
+    break;
+  }
 }
 
 void display_case ( int i, int j) {
   int k = j;
-  if ((i==SELECTED_SQUARE_X) && (j==SELECTED_SQUARE_Y)) {
+  if ((i==selected_i) && (j==selected_j)) {
     fill(COLOR_SELECTED);
   } else if ((i+j)%2 == 0) {
     fill(COLOR_BLACK);
@@ -556,45 +557,44 @@ void display_piece (int i, int j) {
 }
 
 
-void display_possible_moves () {
+IntList make_list_possible_moves (int[][][] temp_board, int i, int j) {
 
-  switch (plateau[SELECTED_SQUARE_X][SELECTED_SQUARE_Y][PIECE]) {
+  IntList list_of_possible_moves = new IntList ();
+
+
+  switch (temp_board[i][j][PIECE]) {
     case (PION) :
-    println("pion");
-    selected_list_of_possible_moves = list_moves_PION (plateau, SELECTED_SQUARE_X, SELECTED_SQUARE_Y);
+    list_of_possible_moves = list_moves_PION (temp_board, i, j);
     break;
     case (TOUR) :
-    println("tour");
-    selected_list_of_possible_moves = list_moves_TOUR (plateau, SELECTED_SQUARE_X, SELECTED_SQUARE_Y);
+    list_of_possible_moves = list_moves_TOUR (temp_board, i, j);
     break;
     case (FOU) :
-    println("fou");
-    selected_list_of_possible_moves = list_moves_FOU (plateau, SELECTED_SQUARE_X, SELECTED_SQUARE_Y);
+    list_of_possible_moves = list_moves_FOU (temp_board, i, j);
     break;
     case (CAVALIER) :
-    println("cavalier");
-    selected_list_of_possible_moves = list_moves_CAVALIER (plateau, SELECTED_SQUARE_X, SELECTED_SQUARE_Y);
+    list_of_possible_moves = list_moves_CAVALIER (temp_board, i, j);
     break;
     case (REINE) :
-    println("reine");
-    selected_list_of_possible_moves = list_moves_REINE (plateau, SELECTED_SQUARE_X, SELECTED_SQUARE_Y);
+    list_of_possible_moves = list_moves_REINE (temp_board, i, j);
     break;
     case (ROI) :
-    println("roi");
-    selected_list_of_possible_moves = list_moves_ROI (plateau, SELECTED_SQUARE_X, SELECTED_SQUARE_Y);
+    list_of_possible_moves = list_moves_ROI (temp_board, i, j);
     break;
   default :
-    println("default");
-    selected_list_of_possible_moves.clear();
+    list_of_possible_moves.clear();
     break;
   }
 
-  for (int i = 0; i < selected_list_of_possible_moves.size(); i = i+2) {
+  return list_of_possible_moves;
+}
+
+void display_possible_moves (IntList list) {
+
+  for (int i = 0; i < list.size(); i = i+2) {
     fill (206, 206, 206);
-    ellipse(selected_list_of_possible_moves.get(i)*TAILLE_CASE, selected_list_of_possible_moves.get(i+1)*TAILLE_CASE, TAILLE_CASE/3, TAILLE_CASE/3);
+    ellipse(list.get(i)*TAILLE_CASE, list.get(i+1)*TAILLE_CASE, TAILLE_CASE/3, TAILLE_CASE/3);
   }
-  println("after display possible_move");
-  print_plateau(plateau);
 }
 
 
@@ -622,9 +622,10 @@ void setup () {
   cavalier_b = loadImage("cavalier_b.png");
   tour_b = loadImage("tour_b.png");
 
-  selected_list_of_possible_moves.clear();
-  SELECTED_SQUARE_X = 0;
-  SELECTED_SQUARE_Y = 0;
+  // selected_list_of_possible_moves.clear();
+  selected_i = 0;
+  selected_j = 0;
+  current_list_of_possible_moves.clear();
 
   init_plateau();
   display_plateau();
@@ -638,45 +639,96 @@ void mousePressed() {
   if (clic_in_board()) {
     clic_X = mouseX;
     clic_Y = mouseY;
-    // clic_step = (clic_step +1) %3;
-    println("waiting = 0   -   selected = 1   -   targeted = 2   :", clic_step);
   }
 
   switch (clic_step) {
   case WAITING :
-    println("clic after waiting");
-    print_plateau(plateau);
-    SELECTED_SQUARE_X = convert_clic_to_board(clic_X);
-    SELECTED_SQUARE_Y = convert_clic_to_board(clic_Y);
-    clic_step = SELECTED;
-    if (plateau[SELECTED_SQUARE_X][SELECTED_SQUARE_Y][COLOR] != active_player) {
-      SELECTED_SQUARE_X = 0;
-      SELECTED_SQUARE_Y = 0;
-      clic_step = WAITING;
-    }
+    make_selecting();
     break;
   case SELECTED :
-    println("clic after selected");
-    int TARGETED_SQUARE_X = convert_clic_to_board(clic_X);
-    int TARGETED_SQUARE_Y = convert_clic_to_board(clic_Y);
-    clic_step = WAITING;
-    if (plateau[TARGETED_SQUARE_X][TARGETED_SQUARE_Y][COLOR] == active_player) {
-      SELECTED_SQUARE_X = TARGETED_SQUARE_X;
-      SELECTED_SQUARE_Y = TARGETED_SQUARE_Y;
-      clic_step = SELECTED;
-    } else {
-      resolve_move(TARGETED_SQUARE_X, TARGETED_SQUARE_Y);
-      SELECTED_SQUARE_X = 0;
-      SELECTED_SQUARE_Y = 0;
-    }
+    make_targeting();
     break;
   }
-  println("fin clic_step case");
+  println("fin MousePressed");
   print_plateau(plateau);
   display_plateau();
 }
 
 
+void make_selecting() {
+  println("make_selecting");
+  print_plateau(plateau);
+
+  selected_i = convert_clic_to_board(clic_X);
+  selected_j = convert_clic_to_board(clic_Y);
+
+  if (plateau[selected_i][selected_j][COLOR] == active_player) {
+    current_list_of_possible_moves = make_list_possible_moves (plateau, selected_i, selected_j);
+    println("liste coups possible créées : ", current_list_of_possible_moves);
+    println("case selectionnée contient ", plateau[selected_i][selected_j][PIECE], ",", plateau[selected_i][selected_j][COLOR]);
+    current_list_of_possible_moves = verifie_list_possible_moves(plateau, selected_i, selected_j, current_list_of_possible_moves);
+    println("liste coups possibles nettoyée : ", current_list_of_possible_moves);
+    println("case selectionnée contient ", plateau[selected_i][selected_j][PIECE], ",", plateau[selected_i][selected_j][COLOR]);
+
+    clic_step = SELECTED;
+  } else {
+    selected_i = 0;
+    selected_j = 0;
+  }
+}
+
+void make_targeting() {
+
+  println("make_targeting");
+
+  int k = convert_clic_to_board(clic_X);
+  int l = convert_clic_to_board(clic_Y);
+
+  if (is_move_in_list (current_list_of_possible_moves, k, l)) {
+    make_move (selected_i, selected_j, k, l);
+  }
+  clic_step = WAITING;
+  current_list_of_possible_moves.clear();
+  selected_i = 0;
+  selected_j = 0;
+}
+
+
+
+boolean is_move_in_list (IntList list, int i, int j) {
+  boolean answer = false;
+  for (int k = 0; k < list.size(); k = k+2) {
+    if ((list.get(k) == i) && (list.get(k+1) == j)) {
+      answer = true;
+    }
+  }
+  return answer;
+}
+
+
+void make_move (int i, int j, int k, int l) {
+  println("make_move pour ", i, ",", j, " to ", k, ",", l);
+  plateau[k][l][PIECE] = plateau[i][j][PIECE];
+  plateau[k][l][COLOR] = plateau[i][j][COLOR];
+  plateau[i][j][PIECE] = VIDE;
+  plateau[i][j][COLOR] = VIDE;
+
+  if (active_player == BLANC) {
+    active_player = NOIR;
+  } else {
+    active_player = BLANC;
+  }
+
+  // test echec et nombre de coups
+
+  if (count_possible_moves (active_player, plateau) == 0) {
+    if (verifie_echec(plateau, active_player)) {
+      status = MAT;
+    } else {
+      status = PAT;
+    }
+  }
+}
 
 
 boolean clic_in_board() {
@@ -687,29 +739,19 @@ int convert_clic_to_board (int clic_position) {
   return (1+(clic_position - TAILLE_CASE/2)/TAILLE_CASE);
 }
 
-void resolve_move (int i, int j) {
-  println("moving", plateau[i][j][PIECE], " ", plateau[i][j][COLOR], " ", SELECTED_SQUARE_X, ",", SELECTED_SQUARE_Y, " to ", i, ",", j);
+int[][][] copy_board (int[][][] board) {
+  int a = board.length;
+  int b = board[0].length;
+  int c = board[0][0].length;
 
-  for (int x = 0; x < selected_list_of_possible_moves.size(); x = x+2) {
-    println("list item ", selected_list_of_possible_moves.get(x), ",", selected_list_of_possible_moves.get(x+1));
-    if ((selected_list_of_possible_moves.get(x) == i) && (selected_list_of_possible_moves.get(x+1) == j)) {
-      plateau[i][j][PIECE] = plateau[SELECTED_SQUARE_X][SELECTED_SQUARE_Y][PIECE];
-      plateau[i][j][COLOR] = plateau[SELECTED_SQUARE_X][SELECTED_SQUARE_Y][COLOR];
-      plateau[SELECTED_SQUARE_X][SELECTED_SQUARE_Y][PIECE] = VIDE;
-      plateau[SELECTED_SQUARE_X][SELECTED_SQUARE_Y][COLOR] = VIDE;
-      SELECTED_SQUARE_X = 0;
-      SELECTED_SQUARE_Y = 0;
-      clic_step = WAITING;
-      println("ok move n° ", x);
-      if (active_player == BLANC) {
-        active_player = NOIR;
-      } else {
-        active_player = BLANC;
+  int[][][] copy = new int[a][b][c];
+
+  for (int i = 0; i < a; i++) {
+    for (int j = 0; j < b; j++) {
+      for (int k = 0; k < c; k++) {
+        copy[i][j][k] = board[i][j][k];
       }
-    } else {
-      println("impossible move n° ", x);
     }
   }
-  println("after resolve_move");
-  print_plateau(plateau);
+  return copy;
 }
