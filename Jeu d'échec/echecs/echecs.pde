@@ -1,8 +1,9 @@
-// Réglages taille et couleur
+// Réglages taille et couleur //<>//
 final int TAILLE_CASE = 70;
 final color COLOR_WHITE = color (234, 218, 248);
 final color COLOR_BLACK = color (151, 118, 179);
 final color COLOR_SELECTED = color (59, 255, 93);
+final color BACKGROUND = color (232, 232, 232);
 
 
 // Tableau contenant toutes les infos
@@ -56,6 +57,8 @@ PImage pion_n;
 // Gestion de la souris
 int clic_X = 0;
 int clic_Y = 0;
+int option_X = 0;
+int option_Y = 0;
 
 final int WAITING = 0;
 final int SELECTED = 1;
@@ -73,13 +76,14 @@ final int MAT = 2;
 final int PAT = 3;
 final int NULL = 4;
 final int TIME_OUT = 5;
-int status = PLAYING;
+final int PROMOTING = 6;
+int status = WAITING;
 
 // Gestion temps et coups
 int time_last_display = millis();
 float timer_blanc = 600;
 float timer_noir = 600;
-IntList hystory_of_moves = new IntList();
+IntList history_of_moves = new IntList();
 
 void init_plateau () {
   active_player = BLANC;
@@ -475,6 +479,7 @@ IntList make_list_of_all_possible_moves (int[][][] board, int player) {
 void display_plateau() {
   for (int i = A; i <= H; i++) {
     for (int j = 1; j <= 8; j++) {
+
       display_case(i, j);
       display_piece(i, j);
     }
@@ -482,12 +487,12 @@ void display_plateau() {
   display_possible_moves(current_list_of_possible_moves);
 }
 
-void display_end() {
+void display_msg() {
   fill(255, 0, 0);
   textSize(TAILLE_CASE);
   switch (status) {
   case MAT :
-    text("Echec et Mat", 4.5*TAILLE_CASE, 4.5*TAILLE_CASE);
+    text("Echec et Mat", 4*TAILLE_CASE, 4*TAILLE_CASE);
     println("mat");
     break;
   case PAT :
@@ -501,6 +506,9 @@ void display_end() {
   case TIME_OUT :
     text("Time Out", 4*TAILLE_CASE, 4*TAILLE_CASE);
     println("time out");
+    break;
+  case WAITING :
+    text("Clic to start", 4*TAILLE_CASE, 4*TAILLE_CASE);
     break;
   }
 }
@@ -618,6 +626,7 @@ void setup () {
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
   textSize(TAILLE_CASE);
+  background(BACKGROUND);
 
   pion_n = loadImage("pion_n.png");
   roi_n = loadImage("roi_n.png");
@@ -640,17 +649,28 @@ void setup () {
 
   init_plateau();
   display_plateau();
+  display_button();
+}
+
+void display_button() {
+  fill (255,0,0);
+  rect(8*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
+  rect(8*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
+  fill(255);
+  textSize(TAILLE_CASE/2);
+  text("Set", 8*TAILLE_CASE, 8.75*TAILLE_CASE);
+  text("Quit", 8*TAILLE_CASE, 0.25*TAILLE_CASE);
 }
 
 void draw () {
   display_timer();
   if (status != PLAYING) {
-    display_end();
+    display_msg();
   }
 }
 
 void display_timer() {
-  if (status == PLAYING) {
+  if (status == PLAYING || status == PROMOTING) {
     switch (active_player) {
     case BLANC :
       timer_blanc -= float(millis()-time_last_display)/1000;
@@ -665,6 +685,15 @@ void display_timer() {
     rect(TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
     rect(TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
 
+    if (status == PLAYING || status == PROMOTING) {
+      fill (COLOR_SELECTED);
+      float k = 0.25;
+      if (active_player == BLANC) {
+        k = 8.75;
+      }
+      rect(TAILLE_CASE, k*TAILLE_CASE, TAILLE_CASE, TAILLE_CASE/2);
+    }
+
     fill(0);
     textSize(TAILLE_CASE/2);
     text(int(timer_blanc), TAILLE_CASE, 8.75*TAILLE_CASE);
@@ -678,19 +707,32 @@ void display_timer() {
 
 void mousePressed() {
   println("event mousepressed");
+  clic_X = mouseX;
+  clic_Y = mouseY;
+
   if (clic_in_board()) {
-    clic_X = mouseX;
-    clic_Y = mouseY;
-  }
-  if (status == PLAYING) {
-    switch (clic_step) {
-    case WAITING :
-      make_selecting();
-      break;
-    case SELECTED :
-      make_targeting();
-      break;
+
+    if (status == PLAYING) {
+      switch (clic_step) {
+      case WAITING :
+        make_selecting();
+        break;
+      case SELECTED :
+        make_targeting();
+        break;
+      }
     }
+  } else {
+    option_X = convert_clic_to_board(clic_X);
+    option_Y = convert_clic_to_board(clic_Y);
+
+    if (status == PROMOTING) {
+      make_promotion();
+    }
+  }
+  if (status == WAITING) {
+    status = PLAYING;
+    time_last_display = millis();
   }
   println("fin MousePressed");
   print_plateau(plateau);
@@ -751,23 +793,20 @@ boolean is_move_in_list (IntList list, int i, int j) {
 
 void make_move (int i, int j, int k, int l) {
   println("make_move pour ", i, ",", j, " to ", k, ",", l);
-  hystory_of_moves.append(i);
-  hystory_of_moves.append(j);
-  hystory_of_moves.append(k);
-  hystory_of_moves.append(l);
+  history_of_moves.append(i);
+  history_of_moves.append(j);
+  history_of_moves.append(k);
+  history_of_moves.append(l);
   plateau[k][l][PIECE] = plateau[i][j][PIECE];
   plateau[k][l][COLOR] = plateau[i][j][COLOR];
   plateau[i][j][PIECE] = VIDE;
   plateau[i][j][COLOR] = VIDE;
-  
-  if ((plateau[k][l][PIECE] == PION) && (l==8 || l==1)){
-    make_promotion(k, l);
-  }
 
-  if (active_player == BLANC) {
-    active_player = NOIR;
+  if ((plateau[k][l][PIECE] == PION) && (l==8 || l==1)) {
+    display_promotion();
+    status = PROMOTING;
   } else {
-    active_player = BLANC;
+    change_active_player();
   }
 
   // test echec et nombre de coups
@@ -781,30 +820,73 @@ void make_move (int i, int j, int k, int l) {
   }
 }
 
+void change_active_player() {
+  if (active_player == BLANC) {
+    active_player = NOIR;
+  } else {
+    active_player = BLANC;
+  }
+}
 
-void make_promotion(int i, int j) {
-  switch (j){
-    case 1:
+void display_promotion() {
+  switch (active_player) {
+  case NOIR:
     fill(255);
-    rect(4.5*TAILLE_CASE,8.75*TAILLE_CASE,4*TAILLE_CASE,TAILLE_CASE/2);
-   image(reine_n, 3*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   image(tour_n, 4*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   image(fou_n, 5*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   image(cavalier_n, 6*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   break;
-   case 8 :
-   fill(0);
-   rect(4.5*TAILLE_CASE,0.25*TAILLE_CASE,4*TAILLE_CASE,TAILLE_CASE/2);
-   image(reine_b, 3*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   image(tour_b, 4*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   image(fou_b, 5*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   image(cavalier_b, 6*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
-   break;
-   
-   // ajouter le choix de la pièce à promouvoir par clic
-   // remplacer pion concerné par pièce choisie
-   // trouver un moyen de l'intégrer à l'historique 
-   // effacer sur l'écran la zone de choix pour la promotion
+    rect(4.5*TAILLE_CASE, 8.75*TAILLE_CASE, 4*TAILLE_CASE, TAILLE_CASE/2);
+    image(reine_n, 3*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    image(tour_n, 4*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    image(fou_n, 5*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    image(cavalier_n, 6*TAILLE_CASE, 8.75*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    break;
+  case BLANC :
+    fill(0);
+    rect(4.5*TAILLE_CASE, 0.25*TAILLE_CASE, 4*TAILLE_CASE, TAILLE_CASE/2);
+    image(reine_b, 3*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    image(tour_b, 4*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    image(fou_b, 5*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    image(cavalier_b, 6*TAILLE_CASE, 0.25*TAILLE_CASE, TAILLE_CASE/2, TAILLE_CASE/2);
+    break;
+
+    // ajouter le choix de la pièce à promouvoir par clic
+    // remplacer pion concerné par pièce choisie
+    // trouver un moyen de l'intégrer à l'historique
+    // effacer sur l'écran la zone de choix pour la promotion
+  }
+}
+
+void make_promotion() {
+
+  int i = history_of_moves.get(history_of_moves.size()-2);
+  int j = history_of_moves.get(history_of_moves.size()-1);
+  int choice = VIDE;
+
+  if ((active_player == BLANC && option_Y == 1) || (active_player == NOIR && option_Y == 9)) {
+    switch (option_X) {
+    case 3 :
+      choice = REINE;
+      break;
+    case 4 :
+      choice = TOUR;
+      break;
+    case 5 :
+      choice = FOU;
+      break;
+    case 6 :
+      choice = CAVALIER;
+      break;
+    }
+    if (choice != VIDE) {
+      plateau[i][j][PIECE] = choice;
+      history_of_moves.append(choice);
+      history_of_moves.append(active_player);
+      history_of_moves.append(i);
+      history_of_moves.append(j);
+      status = PLAYING;
+      change_active_player();
+      fill(BACKGROUND);
+      rect(4.5*TAILLE_CASE, 0.25*TAILLE_CASE, 4*TAILLE_CASE, TAILLE_CASE/2);
+      rect(4.5*TAILLE_CASE, 8.75*TAILLE_CASE, 4*TAILLE_CASE, TAILLE_CASE/2);
+    }
   }
 }
 
